@@ -80,7 +80,7 @@ export default function HakkimizdaPage() {
             </div>
             <div className={styles.founderImageWrapper}>
                <Image 
-                 src="/images/ai-teams/founder_portrait.png" 
+                 src="/images/slider/kurucu.png" 
                  alt="Sevgi Keskin" 
                  fill
                  className={styles.founderImage}

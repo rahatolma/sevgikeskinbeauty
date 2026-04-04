@@ -20,6 +20,7 @@ export default function Footer() {
             <h4>Keşfet</h4>
             <ul className={styles.footerLinks}>
               <li><Link href="/">Anasayfa</Link></li>
+              <li><Link href="/hizmetlerimiz">Hizmetlerimiz</Link></li>
               <li><Link href="/hakkimizda">Hakkımızda</Link></li>
               <li><Link href="/iletisim">İletişim</Link></li>
             </ul>

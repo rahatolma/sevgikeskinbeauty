@@ -252,10 +252,10 @@ Tarih: ${selectedDate} / ${selectedTime}
                 {step === 4 && "İletişim Bilgileri"}
                 </h1>
                 <div className={styles.stepper}>
-                <span className={`${styles.step} ${step >= 1 ? styles.stepActive : ''}`}>1. Hizmet</span>
-                <span className={`${styles.step} ${step >= 2 ? styles.stepActive : ''}`}>2. Uzman</span>
-                <span className={`${styles.step} ${step >= 3 ? styles.stepActive : ''}`}>3. Tarih</span>
-                <span className={`${styles.step} ${step >= 4 ? styles.stepActive : ''}`}>4. Onay</span>
+                <span className={`${styles.step} ${step >= 1 ? styles.stepActive : ''}`} onClick={() => { if (step > 1) setStep(1); }}>1. Hizmet Seç</span>
+                <span className={`${styles.step} ${step >= 2 ? styles.stepActive : ''}`} onClick={() => { if (step > 2) setStep(2); }}>2. Uzman Seç</span>
+                <span className={`${styles.step} ${step >= 3 ? styles.stepActive : ''}`} onClick={() => { if (step > 3) setStep(3); }}>3. Tarih Belirle</span>
+                <span className={`${styles.step} ${step >= 4 ? styles.stepActive : ''}`} onClick={() => { if (step > 4) setStep(4); }}>4. Rezervasyonu Onayla</span>
                 </div>
             </>
           )}
@@ -275,6 +275,18 @@ Tarih: ${selectedDate} / ${selectedTime}
                           const visibleServices = showAllServices 
                               ? activeCategory.services 
                               : activeCategory.services.slice(0, 4);
+                              
+                          const renderPrice = (price: any) => {
+                             if (!price) return "";
+                             const str = String(price).trim();
+                             
+                             // ₺ işaretini veya boşlukları temizleyip sadece rakam mı diye bakalım
+                             const cleanStr = str.replace(/[₺\s]/g, "");
+                             if (/^\d+$/.test(cleanStr)) {
+                                return `₺${Number(cleanStr).toLocaleString('tr-TR')}`;
+                             }
+                             return str;
+                          };
                           
                           return (
                             <>
@@ -293,7 +305,7 @@ Tarih: ${selectedDate} / ${selectedTime}
                                       </span> 
                                       <span className={styles.metaTagPrice}>
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                                        {service.price}
+                                        {renderPrice(service.price)}
                                       </span> 
                                     </div>
                                   </div>
@@ -346,9 +358,34 @@ Tarih: ${selectedDate} / ${selectedTime}
              {/* ADIM 2: UZMAN */}
              {step === 2 && (
                <div className="animate-fade-up">
-                  <div className={styles.stickyRecapBar}>
-                    <span className={styles.stickyRecapLabel}>Seçilen Hizmet:</span>
-                    <span className={styles.stickyRecapValue}>{selectedService?.name} <span style={{opacity:0.6}}>&bull; {selectedService?.duration}</span></span>
+                  <div className={styles.listItem} style={{cursor: 'default', backgroundColor: '#fdfbf9', borderColor: 'rgba(212, 175, 55, 0.3)', marginBottom: '2rem'}}>
+                    <div className={styles.serviceInfo}>
+                      <div style={{fontSize: '0.8rem', color: 'var(--color-gold)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', fontWeight: 600}}>
+                        ✔️ Seçilen Hizmet
+                      </div>
+                      <div className={styles.serviceName}>{selectedService?.name}</div>
+                      {selectedService?.description && (
+                         <div className={styles.serviceDesc}>{selectedService?.description}</div>
+                      )}
+                      
+                      <div style={{display: 'flex', gap: '15px', marginTop: '1rem', flexWrap: 'wrap'}}>
+                          <span className={styles.metaTag}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {selectedService?.duration}
+                          </span>
+                          {selectedService?.price && (
+                              <span className={styles.metaTagPrice}>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                {renderPrice(selectedService.price)}
+                              </span>
+                          )}
+                      </div>
+                    </div>
+                    <div className={styles.serviceAction}>
+                      <button className={styles.buttonSecondary} onClick={() => setStep(1)} style={{padding: '0.6rem 1.2rem', fontSize: '0.8rem'}}>
+                        Hizmeti Değiştir
+                      </button>
+                    </div>
                   </div>
 
                   <h3 className={styles.stepBlockTitle} style={{marginBottom: '0.5rem'}}>Uzman Ataması</h3>

@@ -68,6 +68,15 @@
   background-color: var(--color-gold);
 }
 
+.navLinkActive {
+  color: var(--color-gold);
+}
+
+.navLinkActive::after {
+  width: 100%;
+  background-color: var(--color-gold);
+}
+
 .navBookingBtn {
   display: inline-flex;
   align-items: center;

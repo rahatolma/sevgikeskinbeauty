@@ -156,7 +156,19 @@ export default function HizmetlerimizPage() {
                                <p style={{ color: '#9ca3af' }}>Bu kategoride henüz aktif hizmet bulunmamaktadır.</p>
                            ) : (
                                <div className={styles.subServicesList}>
-                                  {activeServices.map((sub) => (
+                                  {activeServices.map((sub) => {
+                                      // Fiyat Düzeltici Regex Mantığı
+                                      const renderPrice = (priceVal: any) => {
+                                         if (!priceVal) return "";
+                                         const str = String(priceVal).trim();
+                                         const cleanStr = str.replace(/[₺\s]/g, "");
+                                         if (/^\d+$/.test(cleanStr)) {
+                                            return `₺${Number(cleanStr).toLocaleString('tr-TR')}`;
+                                         }
+                                         return str;
+                                      };
+                                      
+                                      return (
                                      <div key={sub.id} className={`${styles.subServiceRow} ${sub.is_featured ? styles.highlightCard : ""}`}>
                                         
                                         {/* ABSOLUTE BADGE (Only Featured logic explicitly displayed here) */}
@@ -171,7 +183,18 @@ export default function HizmetlerimizPage() {
                                               <h4 className={styles.subServiceName}>{sub.name}</h4>
                                            </div>
                                            <p className={styles.subServiceMicroDesc}>{sub.short_description}</p>
-                                           <span className={styles.subServiceDuration}>⏱ {sub.duration_minutes} dk</span>
+                                           <div style={{display: 'flex', gap: '15px', marginTop: 'auto', flexWrap: 'wrap'}}>
+                                               <span className={styles.metaTag}>
+                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                 {sub.duration_minutes} dk
+                                               </span>
+                                               {sub.price && (
+                                                   <span className={styles.metaTagPrice}>
+                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                                     {renderPrice(sub.price)}
+                                                   </span>
+                                               )}
+                                           </div>
                                         </div>
                                         <div className={styles.subServiceAction}>
                                           <Link href="/rezervasyon" className={styles.subServiceBtn}>
@@ -179,7 +202,7 @@ export default function HizmetlerimizPage() {
                                           </Link>
                                         </div>
                                      </div>
-                                  ))}
+                                  )})}
                                </div>
                            )}
 
