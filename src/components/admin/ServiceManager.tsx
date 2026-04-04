@@ -2,22 +2,30 @@
 
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, Plus, Edit2, Trash2, Star, ListTree, X } from 'lucide-react';
+import { GripVertical, Plus, Edit2, Trash2, Star, ListTree, X, Award, ChevronRight } from 'lucide-react';
 import styles from './ServiceManager.module.css';
 import { supabase } from '@/lib/supabase';
 
+// EXHAUSTIVE CATEGORY SCHEMA
 type Category = {
   id: string;
+  slug: string;
   name: string;
-  description: string | null;
+  marketing_title: string | null;
+  services_page_intro: string | null;
+  short_description: string | null;
+  booking_description: string | null;
   cover_image_url: string | null;
   icon_name: string | null;
   sort_order: number;
+  is_active: boolean;
 };
 
+// EXHAUSTIVE SERVICE SCHEMA
 type Service = {
   id: string;
   category_id: string;
+  slug: string;
   name: string;
   duration_minutes: number;
   short_description: string;
@@ -26,6 +34,7 @@ type Service = {
   price: string | null; 
   is_active: boolean;
   is_featured: boolean;
+  is_hero: boolean;
   sort_order: number;
 };
 
@@ -60,15 +69,7 @@ export default function ServiceManager() {
     setIsLoading(true);
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
-        setCategories([
-          { id: 'cat-1', name: 'Cilt Bakımı & Yenileyici Ritüeller', description: 'Özel uygulamalar', cover_image_url: null, icon_name: '✨', sort_order: 0 },
-          { id: 'cat-2', name: 'Yüz Masajları', description: 'Rahatlatıcı masajlar', cover_image_url: null, icon_name: '💆‍♀️', sort_order: 1 }
-        ]);
-        setServices([
-          { id: 'srv-1', category_id: 'cat-1', name: 'Anti-Aging Cilt Bakımı', duration_minutes: 60, short_description: 'Kırışıklık azaltır', long_description: '', price_type: 'custom', price: null, is_active: true, is_featured: true, sort_order: 0 },
-          { id: 'srv-2', category_id: 'cat-1', name: 'Oxy Hydrafacial', duration_minutes: 75, short_description: 'Nemlendirir', long_description: '', price_type: 'fixed', price: '1500', is_active: true, is_featured: false, sort_order: 1 }
-        ]);
-        setError("Supabase bağlantısı kurulamadı. Örnek veri gösteriliyor.");
+        setError("Supabase bağlantısı kurulamadı. Gerçek veritabanına bağlanılamadı.");
       } else {
         const { data: cats, error: catError } = await supabase.from('service_categories').select('*').order('sort_order', { ascending: true });
         if (catError) throw catError;
@@ -78,6 +79,10 @@ export default function ServiceManager() {
 
         setCategories(cats || []);
         setServices(srvs || []);
+        
+        if (cats && cats.length > 0 && !selectedCategoryId) {
+            setSelectedCategoryId(cats[0].id);
+        }
       }
     } catch (e: any) {
       console.error(e);
@@ -111,6 +116,7 @@ export default function ServiceManager() {
   const onDragEndService = async (result: DropResult) => {
     if (!result.destination) return;
     
+    // Sort local slice before mapping properly
     const categoryServices = services.filter(s => s.category_id === selectedCategoryId).sort((a,b) => a.sort_order - b.sort_order);
     const [reorderedItem] = categoryServices.splice(result.source.index, 1);
     categoryServices.splice(result.destination.index, 0, reorderedItem);
@@ -127,6 +133,7 @@ export default function ServiceManager() {
 
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
+        // Send bulk individual requests for sort order updates
         for (const item of updatedCategoryServices) {
            await supabase.from('services').update({ sort_order: item.sort_order }).eq('id', item.id);
         }
@@ -138,7 +145,17 @@ export default function ServiceManager() {
 
   // --- CATEGORY CRUD ---
   const openNewCategoryModal = () => {
-    setEditingCat({ name: '', icon_name: '✨', description: '' });
+    setEditingCat({ 
+        name: '', 
+        slug: '',
+        marketing_title: '',
+        services_page_intro: '',
+        short_description: '',
+        booking_description: '',
+        icon_name: '✨', 
+        cover_image_url: '',
+        is_active: true
+    });
     setCatModalOpen(true);
   };
 
@@ -153,15 +170,18 @@ export default function ServiceManager() {
     setIsSubmitting(true);
     
     const isEditing = !!editingCat.id;
-    const slug = generateSlug(editingCat.name);
+    const finalSlug = editingCat.slug || generateSlug(editingCat.name);
     
     const payload = {
       name: editingCat.name,
-      slug: slug,
+      slug: finalSlug,
+      marketing_title: editingCat.marketing_title || null,
+      services_page_intro: editingCat.services_page_intro || null,
+      short_description: editingCat.short_description || null,
+      booking_description: editingCat.booking_description || null,
       icon_name: editingCat.icon_name || '✨',
-      short_description: editingCat.description || '',
-      booking_description: editingCat.description || '',
-      is_active: true,
+      cover_image_url: editingCat.cover_image_url || null,
+      is_active: editingCat.is_active ?? true,
       sort_order: isEditing ? editingCat.sort_order : categories.length
     };
 
@@ -179,13 +199,6 @@ export default function ServiceManager() {
           if (data) {
             setCategories([...categories, data[0]]);
           }
-        }
-      } else {
-        // Mock fallback update
-        if (isEditing) {
-          setCategories(cats => cats.map(c => c.id === editingCat.id ? { ...c, ...editingCat } as Category : c));
-        } else {
-          setCategories([...categories, { ...editingCat, id: 'cat-' + Date.now(), sort_order: categories.length } as Category]);
         }
       }
     } catch (e: any) {
@@ -217,13 +230,17 @@ export default function ServiceManager() {
   const openNewServiceModal = () => {
     setEditingSrv({ 
       name: '', 
+      slug: '',
       category_id: selectedCategoryId!,
       duration_minutes: 60,
       price_type: 'custom',
       price: '',
       short_description: '',
+      long_description: '',
       is_active: true,
-      is_featured: false
+      is_featured: false,
+      is_hero: false,
+      sort_order: services.filter(s => s.category_id === selectedCategoryId).length
     });
     setSrvModalOpen(true);
   };
@@ -239,19 +256,21 @@ export default function ServiceManager() {
     setIsSubmitting(true);
     
     const isEditing = !!editingSrv.id;
-    const slug = generateSlug(editingSrv.name);
+    const finalSlug = editingSrv.slug || generateSlug(editingSrv.name);
     
     const payload = {
       name: editingSrv.name,
-      slug: slug,
+      slug: finalSlug,
       category_id: editingSrv.category_id,
       duration_minutes: Number(editingSrv.duration_minutes),
       price_type: editingSrv.price_type || 'custom',
       price: editingSrv.price_type === 'custom' ? null : Number(editingSrv.price || 0),
       short_description: editingSrv.short_description || '',
+      long_description: editingSrv.long_description || null,
       is_active: editingSrv.is_active ?? true,
       is_featured: editingSrv.is_featured ?? false,
-      sort_order: isEditing ? editingSrv.sort_order : services.filter(s => s.category_id === editingSrv.category_id).length
+      is_hero: editingSrv.is_hero ?? false,
+      sort_order: editingSrv.sort_order ?? 0
     };
 
     try {
@@ -268,13 +287,6 @@ export default function ServiceManager() {
           if (data) {
             setServices([...services, data[0]]);
           }
-        }
-      } else {
-        // Mock fallback update
-        if (isEditing) {
-          setServices(srvs => srvs.map(s => s.id === editingSrv.id ? { ...s, ...editingSrv } as Service : s));
-        } else {
-          setServices([...services, { ...editingSrv, id: 'srv-' + Date.now(), sort_order: 99 } as Service]);
         }
       }
     } catch (e: any) {
@@ -302,7 +314,7 @@ export default function ServiceManager() {
   };
 
 
-  if (isLoading) return <div className={styles.loading}>Yükleniyor...</div>;
+  if (isLoading) return <div className={styles.loading}>Sistem Yükleniyor...</div>;
 
   const currentServices = services.filter(s => s.category_id === selectedCategoryId).sort((a,b) => a.sort_order - b.sort_order);
 
@@ -337,7 +349,10 @@ export default function ServiceManager() {
                           <div className={styles.itemContent}>
                             <span className={styles.itemIcon}>{cat.icon_name}</span>
                             <div className={styles.itemText}>
-                              <strong>{cat.name}</strong>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <strong>{cat.name}</strong>
+                                {!cat.is_active && <span className={styles.badgePassive}>Gizli</span>}
+                              </div>
                               <small>{services.filter(s => s.category_id === cat.id).length} Hizmet</small>
                             </div>
                           </div>
@@ -361,7 +376,7 @@ export default function ServiceManager() {
           <div className={styles.panelHeader}>
             <h3>
               {selectedCategoryId 
-                ? `${categories.find(c => c.id === selectedCategoryId)?.name || ''} Servisleri` 
+                ? <>{categories.find(c => c.id === selectedCategoryId)?.name || ''} <ChevronRight size={16} className={styles.breadcrumbSrv}/> <span className={styles.breadcrumbSrv}> Alt Servisler</span></>
                 : 'Kategori Seçin'}
             </h3>
             {selectedCategoryId && (
@@ -389,6 +404,7 @@ export default function ServiceManager() {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             className={`${styles.listItem} ${snapshot.isDragging ? styles.dragging : ''}`}
+                            style={{ opacity: srv.is_active ? 1 : 0.6 }}
                           >
                             <div {...provided.dragHandleProps} className={styles.dragHandle}>
                               <GripVertical size={16} />
@@ -397,6 +413,7 @@ export default function ServiceManager() {
                               <div className={styles.itemText}>
                                 <div className={styles.titleRow}>
                                   <strong>{srv.name}</strong>
+                                  {srv.is_hero && <span className={styles.badgeHero}><Award size={10} /> Hero</span>}
                                   {srv.is_featured && <span className={styles.badgeFeature}><Star size={10} /> Önerilen</span>}
                                   {!srv.is_active && <span className={styles.badgePassive}>Pasif</span>}
                                 </div>
@@ -404,10 +421,16 @@ export default function ServiceManager() {
                                   <span>{srv.duration_minutes} dk</span>
                                   <span className={styles.dot}>•</span>
                                   <span>{srv.price_type === 'custom' ? 'Kişiye Özel' : `₺${srv.price}`}</span>
+                                  {srv.sort_order !== undefined && (
+                                    <>
+                                        <span className={styles.dot}>•</span>
+                                        <span>Sıra: {srv.sort_order}</span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>
-                            <div className={styles.itemActions}>
+                            <div className={styles.itemActions} style={{ opacity: snapshot.isDragging ? 0 : 1 }}>
                               <button className={styles.iconBtn} onClick={(e) => openEditServiceModal(srv, e)}><Edit2 size={14} /></button>
                               <button className={styles.iconBtnDanger} onClick={(e) => handleDeleteService(srv.id, e)}><Trash2 size={14} /></button>
                             </div>
@@ -424,45 +447,142 @@ export default function ServiceManager() {
         </div>
       </div>
 
-      {/* CATEGORY MODAL */}
+      {/* EXTENDED CATEGORY MODAL WITH PREVIEW */}
       {catModalOpen && editingCat && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
-              <h2>{editingCat.id ? 'Kategoriyi Düzenle' : 'Yeni Kategori Ekle'}</h2>
+              <h2>{editingCat.id ? 'Kategoriyi Düzenle' : 'Yeni Kategori '}</h2>
               <button className={styles.closeBtn} onClick={() => setCatModalOpen(false)}><X size={20} /></button>
             </div>
-            <div className={styles.modalBody}>
-              <div className={styles.formGroup}>
-                <label>Kategori İsmi</label>
-                <input 
-                  type="text" 
-                  className={styles.formInput} 
-                  placeholder="Örn: Fraksiyonel Lazer" 
-                  value={editingCat.name || ''} 
-                  onChange={e => setEditingCat({...editingCat, name: e.target.value})}
-                />
+            
+            <div className={styles.modalBodySplit}>
+              {/* Sol: Form */}
+              <div className={styles.formColumn}>
+                
+                <div className={styles.checkboxGroup}>
+                    <input 
+                      type="checkbox" 
+                      id="catIsActive" 
+                      checked={editingCat.is_active ?? true} 
+                      onChange={e => setEditingCat({...editingCat, is_active: e.target.checked})}
+                    />
+                    <label htmlFor="catIsActive">Kategori Aktif (Rezervasyon Ekranında Gözükür)</label>
+                </div>
+
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 60px', gap: '1rem'}}>
+                    <div className={styles.formGroup}>
+                        <label>Kategori Ana İsmi *</label>
+                        <input 
+                            type="text" 
+                            className={styles.formInput} 
+                            placeholder="Örn: Fraksiyonel Lazer" 
+                            value={editingCat.name || ''} 
+                            onChange={e => setEditingCat({...editingCat, name: e.target.value, slug: generateSlug(e.target.value)})}
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>İkon</label>
+                        <input 
+                            type="text" 
+                            className={styles.formInput} 
+                            placeholder="✨" 
+                            style={{ textAlign: 'center' }}
+                            value={editingCat.icon_name || ''} 
+                            onChange={e => setEditingCat({...editingCat, icon_name: e.target.value})}
+                        />
+                    </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>SEO URL (Slug)</label>
+                  <input 
+                    type="text" 
+                    className={styles.formInput} 
+                    style={{ backgroundColor: '#f9fafb' }}
+                    value={editingCat.slug || ''} 
+                    onChange={e => setEditingCat({...editingCat, slug: e.target.value})}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label>Pazarlama Başlığı (Marketing Title)</label>
+                  <input 
+                    type="text" 
+                    className={styles.formInput} 
+                    placeholder="Anasayfa veya Üst Menüler İçin Kısa Alt Başlık" 
+                    value={editingCat.marketing_title || ''} 
+                    onChange={e => setEditingCat({...editingCat, marketing_title: e.target.value})}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Hizmetler Sayfası Giriş Metni (Intro / Hook)</label>
+                  <input 
+                    type="text" 
+                    className={styles.formInput} 
+                    placeholder="Örn: Cildinizde yorgunluk, matlık veya elastikiyet kaybı mı var?" 
+                    value={editingCat.services_page_intro || ''} 
+                    onChange={e => setEditingCat({...editingCat, services_page_intro: e.target.value})}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Randevu Ekranı Kategori Açıklaması</label>
+                  <textarea 
+                    className={styles.formTextarea} 
+                    style={{ minHeight: '60px' }}
+                    placeholder="Rezervasyon ekranında kategori isminin altında gözükecek ikna edici açıklama." 
+                    value={editingCat.booking_description || ''} 
+                    onChange={e => setEditingCat({...editingCat, booking_description: e.target.value})}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Kapak Görseli URL (Opsiyonel)</label>
+                  <input 
+                    type="text" 
+                    className={styles.formInput} 
+                    placeholder="/images/kategori-kapak.jpg" 
+                    value={editingCat.cover_image_url || ''} 
+                    onChange={e => setEditingCat({...editingCat, cover_image_url: e.target.value})}
+                  />
+                </div>
+
               </div>
-              <div className={styles.formGroup}>
-                <label>İkon (Emoji vb.)</label>
-                <input 
-                  type="text" 
-                  className={styles.formInput} 
-                  placeholder="✨" 
-                  value={editingCat.icon_name || ''} 
-                  onChange={e => setEditingCat({...editingCat, icon_name: e.target.value})}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Açıklama</label>
-                <textarea 
-                  className={styles.formTextarea} 
-                  placeholder="Kategori hakkında kısa bilgi..." 
-                  value={editingCat.description || ''} 
-                  onChange={e => setEditingCat({...editingCat, description: e.target.value})}
-                />
+
+              {/* Sağ: Canlı Önizleme */}
+              <div className={styles.previewColumn}>
+                <div className={styles.previewLabel}>Canlı Önizleme (Randevu UI)</div>
+                <div style={{
+                    padding: '1rem', 
+                    background: 'white', 
+                    borderRadius: '8px', 
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    borderLeft: '4px solid #111827'
+                }}>
+                   <div style={{ fontSize: '2rem' }}>{editingCat.icon_name || '✨'}</div>
+                   <div>
+                       <div style={{ fontWeight: 600, color: '#111827' }}>{editingCat.name || 'Yeni Kategori'}</div>
+                       <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '4px', lineHeight: 1.4 }}>
+                           {editingCat.booking_description || 'Açıklama girilmediğinde boş görünecek.'}
+                       </div>
+                   </div>
+                </div>
+
+                <div className={styles.previewLabel} style={{ marginTop: '1rem' }}>Sistem Kontrolü</div>
+                <div style={{ fontSize: '0.8rem', color: '#4b5563', lineHeight: 1.6 }}>
+                    <div><strong>Durum:</strong> {editingCat.is_active ? 'Görünür 🟢' : 'Görünmez 🔴'}</div>
+                    <div><strong>URL Yolu:</strong> /hizmet/{editingCat.slug || 'slug'}</div>
+                    <div><strong>Pazarlama:</strong> {editingCat.marketing_title || '-'}</div>
+                    <div><strong>Site İçi Giriş:</strong> {editingCat.services_page_intro || '-'}</div>
+                </div>
               </div>
             </div>
+
             <div className={styles.modalFooter}>
               <button className={styles.btnCancel} onClick={() => setCatModalOpen(false)}>İptal</button>
               <button className={styles.btnSubmit} disabled={isSubmitting || !editingCat.name} onClick={handleSaveCategory}>
@@ -473,7 +593,7 @@ export default function ServiceManager() {
         </div>
       )}
 
-      {/* SERVICE MODAL */}
+      {/* EXTENDED SERVICE MODAL WITH PREVIEW */}
       {srvModalOpen && editingSrv && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
@@ -481,72 +601,161 @@ export default function ServiceManager() {
               <h2>{editingSrv.id ? 'Servisi Düzenle' : 'Yeni Servis Ekle'}</h2>
               <button className={styles.closeBtn} onClick={() => setSrvModalOpen(false)}><X size={20} /></button>
             </div>
-            <div className={styles.modalBody}>
-              <div className={styles.formGroup}>
-                <label>Servis İsmi</label>
-                <input 
-                  type="text" 
-                  className={styles.formInput} 
-                  value={editingSrv.name || ''} 
-                  onChange={e => setEditingSrv({...editingSrv, name: e.target.value})}
-                />
-              </div>
-              
-              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+
+            <div className={styles.modalBodySplit}>
+              {/* Sol: Form */}
+              <div className={styles.formColumn}>
+
+                <div className={styles.checkboxGroup}>
+                    <input 
+                      type="checkbox" 
+                      id="srvIsActive" 
+                      checked={editingSrv.is_active ?? true} 
+                      onChange={e => setEditingSrv({...editingSrv, is_active: e.target.checked})}
+                    />
+                    <label htmlFor="srvIsActive">Servis Aktif (Listelerde Göster)</label>
+                </div>
+
                 <div className={styles.formGroup}>
-                  <label>Süre (Dakika)</label>
+                  <label>Servis İsmi *</label>
                   <input 
-                    type="number" 
+                    type="text" 
                     className={styles.formInput} 
-                    value={editingSrv.duration_minutes || ''} 
-                    onChange={e => setEditingSrv({...editingSrv, duration_minutes: Number(e.target.value)})}
+                    placeholder="Örn: Anti-Aging Cilt Bakımı"
+                    value={editingSrv.name || ''} 
+                    onChange={e => setEditingSrv({...editingSrv, name: e.target.value, slug: generateSlug(e.target.value)})}
                   />
                 </div>
-                <div className={styles.formGroup}>
-                  <label>Fiyat Tipi</label>
-                  <select 
-                    className={styles.formSelect}
-                    value={editingSrv.price_type || 'custom'}
-                    onChange={e => setEditingSrv({...editingSrv, price_type: e.target.value as 'fixed' | 'custom'})}
-                  >
-                    <option value="custom">Kişiye Özel Fiyatlandırma</option>
-                    <option value="fixed">Sabit Fiyat</option>
-                  </select>
-                </div>
-              </div>
 
-              {editingSrv.price_type === 'fixed' && (
+                <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+                  <div className={styles.formGroup}>
+                    <label>Süre (Dakika)</label>
+                    <input 
+                      type="number" 
+                      className={styles.formInput} 
+                      value={editingSrv.duration_minutes || ''} 
+                      onChange={e => setEditingSrv({...editingSrv, duration_minutes: Number(e.target.value)})}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Sıralama Priority (Manuel)</label>
+                    <input 
+                      type="number" 
+                      className={styles.formInput} 
+                      value={editingSrv.sort_order ?? 0} 
+                      onChange={e => setEditingSrv({...editingSrv, sort_order: Number(e.target.value)})}
+                    />
+                  </div>
+                </div>
+
+                <div style={{display: 'grid', gridTemplateColumns: editingSrv.price_type === 'fixed' ? '1fr 1fr' : '1fr', gap: '1rem', background: '#f3f4f6', padding: '1rem', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                  <div className={styles.formGroup}>
+                    <label>Fiyatlandırma Stratejisi</label>
+                    <select 
+                      className={styles.formSelect}
+                      style={{ borderColor: '#6b7280' }}
+                      value={editingSrv.price_type || 'custom'}
+                      onChange={e => setEditingSrv({...editingSrv, price_type: e.target.value as 'fixed' | 'custom'})}
+                    >
+                      <option value="custom">Kişiye Özel Fiyat (Fiyat Gizlenir)</option>
+                      <option value="fixed">Sabit Fiyat (₺ Rakam Göster)</option>
+                    </select>
+                  </div>
+                  {editingSrv.price_type === 'fixed' && (
+                    <div className={styles.formGroup}>
+                      <label>Fiyat (₺)</label>
+                      <input 
+                        type="number" 
+                        className={styles.formInput} 
+                        placeholder="Örn: 2500"
+                        style={{ fontWeight: 'bold' }}
+                        value={editingSrv.price || ''} 
+                        onChange={e => setEditingSrv({...editingSrv, price: e.target.value})}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <div className={styles.formGroup}>
-                  <label>Fiyat (₺)</label>
-                  <input 
-                    type="number" 
-                    className={styles.formInput} 
-                    value={editingSrv.price || ''} 
-                    onChange={e => setEditingSrv({...editingSrv, price: e.target.value})}
+                  <label>Kısa Açıklama (Kart Gövdesi)</label>
+                  <textarea 
+                    className={styles.formTextarea} 
+                    style={{ minHeight: '60px' }}
+                    value={editingSrv.short_description || ''} 
+                    onChange={e => setEditingSrv({...editingSrv, short_description: e.target.value})}
                   />
                 </div>
-              )}
 
-              <div className={styles.formGroup}>
-                <label>Kısa Açıklama</label>
-                <textarea 
-                  className={styles.formTextarea} 
-                  value={editingSrv.short_description || ''} 
-                  onChange={e => setEditingSrv({...editingSrv, short_description: e.target.value})}
-                />
+                <div className={styles.formGroup}>
+                  <label>Detaylı Açıklama (Gelecekte Detay Sayfası için)</label>
+                  <textarea 
+                    className={styles.formTextarea} 
+                    placeholder="Blog yazısı gibi detaylı işlem anatomisi..."
+                    value={editingSrv.long_description || ''} 
+                    onChange={e => setEditingSrv({...editingSrv, long_description: e.target.value})}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '1.5rem', background: '#fefce8', padding: '1rem', borderRadius: '8px', border: '1px solid #fef08a' }}>
+                    <div className={styles.checkboxGroup}>
+                        <input 
+                        type="checkbox" 
+                        id="isFeatured" 
+                        checked={editingSrv.is_featured || false} 
+                        onChange={e => setEditingSrv({...editingSrv, is_featured: e.target.checked})}
+                        />
+                        <label htmlFor="isFeatured">⭐ Önerilen Hizmet</label>
+                    </div>
+                    <div className={styles.checkboxGroup}>
+                        <input 
+                        type="checkbox" 
+                        id="isHero" 
+                        checked={editingSrv.is_hero || false} 
+                        onChange={e => setEditingSrv({...editingSrv, is_hero: e.target.checked})}
+                        />
+                        <label htmlFor="isHero">🏆 Hero / Vitrin</label>
+                    </div>
+                </div>
+
               </div>
 
-              <div className={styles.checkboxGroup}>
-                <input 
-                  type="checkbox" 
-                  id="isFeatured" 
-                  checked={editingSrv.is_featured || false} 
-                  onChange={e => setEditingSrv({...editingSrv, is_featured: e.target.checked})}
-                />
-                <label htmlFor="isFeatured">⭐ Önerilen Hizmet (Ön planda gösterilir)</label>
+              {/* Sağ: Canlı Önizleme */}
+              <div className={styles.previewColumn}>
+                <div className={styles.previewLabel}>Canlı Önizleme (Randevu Satırı)</div>
+                <div style={{
+                    padding: '1rem', 
+                    background: 'white', 
+                    borderRadius: '8px', 
+                    boxShadow: '0 2px 4px rgb(0 0 0 / 0.05)',
+                    border: '1px solid #e5e7eb',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem'
+                }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>{editingSrv.name || 'Servis İsmi'}</span>
+                                {editingSrv.is_hero && <span className={styles.badgeHero}><Award size={10} /> Hero</span>}
+                                {editingSrv.is_featured && <span className={styles.badgeFeature}><Star size={10} /> Önerilen</span>}
+                            </div>
+                            <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.2rem' }}>{editingSrv.duration_minutes || 0} dk. İşlem Süresi</div>
+                        </div>
+                        <div style={{ fontWeight: 600, color: '#111827' }}>
+                            {editingSrv.price_type === 'custom' ? 'Kişiye Özel' : `₺${editingSrv.price || 0}`}
+                        </div>
+                   </div>
+                   <div style={{ fontSize: '0.8rem', color: '#4b5563', marginTop: '0.5rem', lineHeight: 1.5 }}>
+                       {editingSrv.short_description || 'Randevu seçeneklerinde görünecek olan kısa servis açıklaması...'}
+                   </div>
+                   <button style={{ marginTop: '0.5rem', width: '100%', padding: '0.5rem', background: '#f9fafb', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, color: '#374151' }}>
+                       + Ekle
+                   </button>
+                </div>
               </div>
 
             </div>
+
             <div className={styles.modalFooter}>
               <button className={styles.btnCancel} onClick={() => setSrvModalOpen(false)}>İptal</button>
               <button className={styles.btnSubmit} disabled={isSubmitting || !editingSrv.name} onClick={handleSaveService}>

@@ -32,6 +32,7 @@ create table if not exists public.service_categories (
   slug text not null unique,
   name text not null,
   marketing_title text,
+  services_page_intro text,
   short_description text,
   booking_description text,
   cover_image_url text,
@@ -69,6 +70,7 @@ create table if not exists public.services (
   price numeric(10,2),
   currency text not null default 'TRY',
   is_featured boolean not null default false,
+  is_hero boolean not null default false,
   is_active boolean not null default true,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
@@ -170,7 +172,18 @@ create index if not exists idx_booking_requests_requested_date
 on public.booking_requests(requested_date);
 
 -- =========================
--- 6) CONTACT REQUESTS
+-- 6) BOOKING TIMELINE LOGS
+-- =========================
+create table if not exists public.booking_timeline_logs (
+    id uuid primary key default gen_random_uuid(),
+    booking_id uuid not null references public.booking_requests(id) on delete cascade,
+    action text not null,
+    note text,
+    created_at timestamptz not null default now()
+);
+
+-- =========================
+-- 7) CONTACT REQUESTS
 -- =========================
 create table if not exists public.contact_requests (
   id uuid primary key default gen_random_uuid(),

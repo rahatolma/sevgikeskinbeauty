@@ -1,0 +1,357 @@
+.managerContainer {
+  padding: 2rem;
+  font-family: var(--font-sans);
+  background-color: #fafafa;
+  min-height: 100vh;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.btnNew {
+  background-color: #111827;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btnNew:hover {
+  background-color: #374151;
+}
+
+/* Overview Row */
+.overviewRow {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.overviewCard {
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+.overviewLabel {
+    font-size: 0.8rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+.overviewValue {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.profileSection {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #9ca3af;
+    overflow: hidden;
+}
+
+.profileInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.profileName {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.profileTitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.statusSection {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badgeActive {
+    background-color: #dcfce3;
+    color: #166534;
+}
+
+.badgePassive {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.cardActions {
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.cardMiddle {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.serviceCount {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.tagsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+.cardBottom {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.cardBtn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    background: transparent;
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.cardBtn:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* DRAWER */
+.drawerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer {
+  width: 500px;
+  background: white;
+  height: 100vh;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawerHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawerTitle {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.drawerContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.formInput {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #111827;
+}
+
+/* Service Checkboxes Structure */
+.hierarchyBlock {
+   background: #f9fafb;
+   padding: 1rem;
+   border-radius: 8px;
+   border: 1px solid #e5e7eb;
+}
+
+.catTitle {
+   font-weight: 600;
+   color: #111827;
+   margin-bottom: 0.75rem;
+   font-size: 0.95rem;
+   border-bottom: 1px solid #e5e7eb;
+   padding-bottom: 0.5rem;
+}
+
+.checkboxList {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.drawerFooter {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  display: flex;
+  gap: 1rem;
+}
+
+.btnPrimary {
+    flex: 1;
+    background: #111827;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+}
+.btnPrimary:hover { background: #374151;}
+
+.btnDanger {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+}
