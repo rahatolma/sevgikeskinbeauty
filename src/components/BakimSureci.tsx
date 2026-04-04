@@ -66,7 +66,7 @@ export default function BakimSureci() {
 
         <div className={styles.ctaBox}>
           <p className={styles.ctaLabel}>Ücretsiz cilt analizi ile başlayın</p>
-          <Link href="/iletisim" className={styles.ctaBtn}>
+          <Link href="/rezervasyon" className={styles.ctaBtn}>
             RANDEVU AL
           </Link>
         </div>

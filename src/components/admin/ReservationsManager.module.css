@@ -1,9 +1,7 @@
 .managerContainer {
-  padding: 2rem;
-  font-family: var(--font-sans);
-  background-color: #fafafa;
-  min-height: 100vh;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .header {
@@ -14,10 +12,11 @@
 }
 
 .title {
-  font-family: var(--font-serif);
-  font-size: 2rem;
+  font-family: var(--font-primary);
+  font-size: 1.8rem;
   color: #111827;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0;
 }
 
 .btnNew {

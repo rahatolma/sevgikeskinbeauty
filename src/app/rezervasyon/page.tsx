@@ -201,43 +201,50 @@ Tarih: ${selectedDate} / ${selectedTime}
   };
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.splitLayout}>
-        
-        {/* Sol Sütun */}
-        <section className={styles.infoColumn}>
-          <div className={styles.stickyInfo}>
-            <h1 className={styles.mainTitle}>Randevunuzu<br/>oluşturun</h1>
-            <p className={styles.subTitle}>Sadece 4 adımda size en uygun bakımı planlayın</p>
-            
-            <ul className={styles.stepsList}>
-              <li className={`${styles.stepItem} ${step >= 1 ? styles.stepItemActive : ''}`}>
-                <span className={styles.stepIcon}>✔</span>
-                Hizmeti seç
-              </li>
-              <li className={`${styles.stepItem} ${step >= 2 ? styles.stepItemActive : ''}`}>
-                <span className={styles.stepIcon}>✔</span>
-                Uzman belirle
-              </li>
-              <li className={`${styles.stepItem} ${step >= 3 ? styles.stepItemActive : ''}`}>
-                <span className={styles.stepIcon}>✔</span>
-                Tarih & saat belirle
-              </li>
-              <li className={`${styles.stepItem} ${step >= 4 ? styles.stepItemActive : ''}`}>
-                <span className={styles.stepIcon}>✔</span>
-                Onayla
-              </li>
-            </ul>
-          </div>
-        </section>
+    <main className={styles.pageContainer}>
+      <section className={styles.mainSection}>
+        <div className={`container ${styles.splitLayout}`}>
+          
+          {/* SOL KOLON: SABİT KATEGORİ MENÜSÜ */}
+          <aside className={styles.leftColumn}>
+            <div className={styles.stickyMenu}>
+              <h4 className={styles.mainTitle}>Hizmetlerimiz</h4>
+              
+              {!isDataLoaded ? (
+                 <div style={{color:'var(--color-gray)'}}>Yükleniyor...</div>
+              ) : dynamicCategories.length === 0 ? (
+                 <div style={{color:'var(--color-gray)'}}>Aktif hizmet bulunamadı.</div>
+              ) : (
+                 <ul className={styles.adminSidebar}>
+                   {dynamicCategories.map((category, index) => (
+                     <li key={index}>
+                       <button 
+                         className={`${styles.adminCategoryBtn} ${openCategory === index || (openCategory === null && index === 0) ? styles.active : ''}`}
+                         onClick={() => {
+                             setStep(1); 
+                             setOpenCategory(index);
+                         }}
+                       >
+                          <div className={styles.adminCategoryTitleRow}>
+                            {/* Icon hidden to perfectly match horizontal left alignment with Hizmetlerimiz: */}
+                            <span className={styles.adminCategoryTitle} style={{marginTop: '2px'}}>{category.title}</span>
+                          </div>
+                          <span className={styles.adminCategoryCount}>{category.services.length} Hizmet</span>
+                       </button>
+                     </li>
+                   ))}
+                 </ul>
+              )}
+            </div>
+          </aside>
 
-        {/* Sağ Sütun */}
-        <section className={styles.bookingColumn}>
+          {/* SAĞ KOLON: DİNAMİK SÜREÇ ALANI */}
+          <div className={styles.rightColumn}>
           
           {step < 5 && (
             <>
-                <h1 style={{fontFamily: 'var(--font-serif)', fontSize: '2rem', marginBottom: '2rem'}}>
-                {step === 1 && "Hizmet Kategorileri"}
+                <h1 style={{fontFamily: 'var(--font-serif)', fontSize: '3rem', color: 'var(--color-dark)', marginBottom: '1.5rem', fontWeight: 400}}>
+                {step === 1 && "Alt Servisler"}
                 {step === 2 && "Uzman Seçimi"}
                 {step === 3 && "Randevu Zamanı"}
                 {step === 4 && "İletişim Bilgileri"}
@@ -252,49 +259,38 @@ Tarih: ${selectedDate} / ${selectedTime}
           )}
 
           <div>
-             {/* ADIM 1: HİZMET */}
+             {/* ADIM 1: HİZMET (Admin Tablo Stili - Sadece Sağ İçerik) */}
              {step === 1 && (
                <div className="animate-fade-up">
-                 {!isDataLoaded ? (
-                     <div style={{color:'var(--color-gray)', textAlign:'center', padding:'2rem'}}>Hizmetler yükleniyor...</div>
-                 ) : dynamicCategories.length === 0 ? (
-                     <div style={{color:'var(--color-gray)', textAlign:'center', padding:'2rem'}}>Aktif hizmet bulunamadı.</div>
-                 ) : (
-                     dynamicCategories.map((category, index) => (
-                       <div key={index} className={styles.categoryGroup}>
-                         <button 
-                           className={styles.categoryHeader} 
-                           onClick={() => setOpenCategory(openCategory === index ? null : index)}
-                         >
-                           <div className={styles.categoryHeaderLeft}>
-                             <div className={styles.categoryTitleRow}>
-                               <span className={styles.categoryIcon}>{category.icon}</span>
-                               <span className={styles.categoryTitleName}>{category.title}</span>
-                             </div>
-                             <p className={styles.categoryDesc}>{category.description}</p>
-                           </div>
-                           <span className={`${styles.chevron} ${openCategory === index ? styles.open : ''}`}>▼</span>
-                         </button>
-                         <div className={`${styles.serviceList} ${openCategory === index ? styles.open : ''}`}>
-                           {category.services.map((service: any, sIndex: number) => (
-                             <div key={sIndex} className={styles.serviceItem}>
-                               <div className={styles.serviceInfo}>
-                                 <h4 className={styles.serviceName}>
-                                   {service.name}
-                                   {service.is_featured && <span style={{marginLeft:'8px', backgroundColor:'#fef3c7', color:'#92400e', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px'}}>⭐ Önerilen</span>}
-                                 </h4>
-                                 <div className={styles.serviceDetails}>
-                                   <span style={{fontWeight:500, color:'var(--color-dark)'}}>{service.duration}</span> &bull; {service.price} &bull; {service.description}
-                                 </div>
-                               </div>
-                               <button className={styles.buttonSelect} onClick={() => selectService(service, category.id)}>
-                                 Devam Et
-                               </button>
-                             </div>
-                           ))}
-                         </div>
-                       </div>
-                     ))
+                 {isDataLoaded && dynamicCategories.length > 0 && (
+                     <div className={styles.adminServicesList}>
+                        {(() => {
+                          const activeIndex = openCategory !== null ? openCategory : 0;
+                          const activeCategory = dynamicCategories[activeIndex];
+                          if (!activeCategory) return null;
+                          
+                          return (
+                            <>
+                              {activeCategory.services.map((service: any, sIndex: number) => (
+                                <div key={sIndex} className={styles.adminServiceCard}>
+                                  <div className={styles.serviceInfo}>
+                                    <h4 className={styles.serviceName}>
+                                      {service.name}
+                                      {service.is_featured && <span style={{marginLeft:'8px', backgroundColor:'#fef3c7', color:'#92400e', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px'}}>⭐ Önerilen</span>}
+                                    </h4>
+                                    <div className={styles.serviceDetails}>
+                                      <span style={{fontWeight:500, color:'var(--color-dark)'}}>{service.duration}</span> &bull; {service.price} &bull; {service.description}
+                                    </div>
+                                  </div>
+                                  <button className={styles.buttonSelect} onClick={() => selectService(service, activeCategory.id)}>
+                                    Seç
+                                  </button>
+                                </div>
+                              ))}
+                            </>
+                          );
+                        })()}
+                     </div>
                  )}
                </div>
              )}
@@ -468,7 +464,7 @@ Tarih: ${selectedDate} / ${selectedTime}
                </div>
              )}
 
-             {/* ADIM 5: BAŞARI MODU */}
+           {/* ADIM 5: BAŞARI MODU */}
              {step === 5 && (
                  <div className="animate-fade-up" style={{textAlign:'center', padding:'3rem 1rem'}}>
                      <div style={{fontSize:'4rem', marginBottom:'1rem'}}>🎉</div>
@@ -496,11 +492,10 @@ Tarih: ${selectedDate} / ${selectedTime}
                      </div>
                  </div>
              )}
-
           </div>
-        </section>
-
-      </div>
-    </div>
+        </div>
+        </div>
+      </section>
+    </main>
   );
 }

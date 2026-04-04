@@ -15,6 +15,7 @@ const services = [
     description: "Daha parlak, canlı ve genç görünen bir cilt",
     image: "/images/services/1-cilt-yenileme-v2.png", 
     link: "/hizmetlerimiz",
+    objectPosition: "center top", // Kadının kafasının kesilmesini önlemek için focusu yukarı çektik
   },
   {
     title: "Leke & Ton Eşitleme",
@@ -44,7 +45,7 @@ const services = [
     title: "Size Özel Bakım Programı",
     description: "Cilt analizi ile sizin için en doğru bakım planını birlikte oluşturuyoruz",
     image: "/images/services/6-ozel-bakim.png", /* Özel kampanya/highlight kartı */
-    link: "/iletisim",
+    link: "/rezervasyon",
     ctaText: "Randevu Al",
     label: "KİŞİYE ÖZEL DANIŞMANLIK"
   }
@@ -54,7 +55,12 @@ export default function Home() {
   return (
     <main>
       {/* Glowish Style Hero Slider */}
-      <HeroSlider />
+      <HeroSlider
+        imageSrc="/images/slider/hero-home-yeni.png"
+        alignment="fullbleed-left"
+        title={<>Sizin için en doğru <br/>bakım deneyimi...</>}
+        subtitle="Cilt, vücut ve bakım ihtiyaçlarınıza özel profesyonel çözümler sunuyoruz."
+      />
 
       {/* Services Section */}
       <section id="hizmetler" className={styles.servicesSection}>
@@ -82,6 +88,7 @@ export default function Home() {
                       alt={service.title} 
                       fill 
                       className={styles.serviceImage}
+                      style={service.objectPosition ? { objectPosition: service.objectPosition } : undefined}
                     />
                     <div className={styles.serviceAlwaysOnOverlay}>
                       <div className={styles.serviceContent}>

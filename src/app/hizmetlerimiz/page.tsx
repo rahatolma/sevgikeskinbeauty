@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import HeroSlider from "@/components/HeroSlider";
 import { supabase } from "@/lib/supabase";
 import styles from "./hizmetlerimiz.module.css";
 
@@ -106,16 +105,6 @@ export default function HizmetlerimizPage() {
 
   return (
     <main className={styles.pageWrapper}>
-
-      <HeroSlider 
-        title={<>Size Özel Güzellik <br/>Protokolleri</>}
-        subtitle={<>İhtiyacınıza yönelik en doğru profesyonel uygulamalarla, <br/>cildinizi ve bedeninizi en iyi haline kavuşturuyoruz.</>}
-        imageSrc="/images/slider/services_1.png"
-        ctaLink="/iletisim"
-        ctaText="RANDEVU AL"
-        ctaNote=""
-        alignment="center"
-      />
       
       <section className={styles.mainSection}>
         <div className={`container ${styles.layoutGrid}`}>
@@ -185,7 +174,7 @@ export default function HizmetlerimizPage() {
                                            <span className={styles.subServiceDuration}>⏱ {sub.duration_minutes} dk</span>
                                         </div>
                                         <div className={styles.subServiceAction}>
-                                          <Link href="/iletisim" className={styles.subServiceBtn}>
+                                          <Link href="/rezervasyon" className={styles.subServiceBtn}>
                                              Randevu Al <span className={styles.btnArrow}>→</span>
                                           </Link>
                                         </div>

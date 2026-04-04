@@ -21,11 +21,11 @@ export default function HakkimizdaPage() {
       <HeroSlider 
         title={<>Cildiniz için doğru olanı <br/>birlikte belirliyoruz</>}
         subtitle={<>Her bakım aynı değildir.<br/>Cildinizin ihtiyacına özel analiz ve uygulama ile gerçek sonuçlar sunuyoruz.</>}
-        imageSrc="/images/slider/about.png"
-        ctaLink="/iletisim"
+        imageSrc="/images/slider/hakkimizda_01.png"
+        ctaLink="/rezervasyon"
         ctaText="RANDEVU AL"
         ctaNote=""
-        reverse={true}
+        alignment="fullbleed-left-heavy"
       />
 
       {/* 2. MARKA HİKAYESİ (DERGİ YAPISI) - ZIG-ZAG 1 (Sol İmaj) */}
@@ -162,7 +162,7 @@ export default function HakkimizdaPage() {
             <div className={styles.ctaContent}>
                <h2 className={styles.ctaTitle}>Sizin için en doğru bakım planını birlikte oluşturalım</h2>
                <p className={styles.ctaSubtitle}>İlk adımı atın, gerisini biz planlayalım.</p>
-               <Link href="/iletisim" className={styles.ctaBtn}>
+               <Link href="/rezervasyon" className={styles.ctaBtn}>
                   Randevu Al
                </Link>
             </div>

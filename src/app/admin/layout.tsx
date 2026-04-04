@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Settings, ListTree, Calendar, Users, LogOut } from 'lucide-react';
+import { Settings, ListTree, Calendar, Users, LogOut, Mailbox } from 'lucide-react';
 import styles from './admin.module.css';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -31,6 +31,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/uzmanlar" className={`${styles.navItem} ${pathname.startsWith('/admin/uzmanlar') ? styles.active : ''}`}>
             <Users size={20} />
             <span>Uzman Yönetimi</span>
+          </Link>
+          <Link href="/admin/iletisim" className={`${styles.navItem} ${pathname.startsWith('/admin/iletisim') ? styles.active : ''}`}>
+            <Mailbox size={20} />
+            <span>İletişim & Aboneler</span>
           </Link>
         </nav>
 

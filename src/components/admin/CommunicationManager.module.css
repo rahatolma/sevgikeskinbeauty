@@ -1,0 +1,177 @@
+.managerContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: var(--font-primary);
+  font-size: 1.8rem;
+  color: #111827;
+  font-weight: 600;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  margin-bottom: -1px;
+}
+
+.tabBtn.active {
+  color: #111827;
+  border-bottom-color: var(--color-gold);
+}
+
+.emptyState {
+  background-color: white;
+  border-radius: 8px;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #6b7280;
+  border: 1px dashed #d1d5db;
+}
+
+.messageCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #e5e7eb;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.messageCard.unread {
+  border-left-color: var(--color-gold);
+  background-color: #fefdf8;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.senderInfo h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.contactDetails {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.contactDetails span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.messageDate {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.messageBody {
+  font-size: 0.95rem;
+  color: #374151;
+  line-height: 1.5;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #f3f4f6;
+  white-space: pre-wrap;
+}
+
+.messageActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btnAction {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.btnAction:hover {
+  background-color: #f3f4f6;
+}
+
+.subscriberGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.subscriberCard {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.subscriberIcon {
+  background-color: #fefdf8;
+  color: var(--color-gold);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subscriberDetails h5 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.subscriberDetails p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}

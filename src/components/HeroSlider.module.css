@@ -61,6 +61,15 @@
   padding: 0; /* Clear internal offsets */
 }
 
+/* Full Bleed Left Alignment */
+.heroContentFullBleedLeft {
+  justify-content: flex-start; /* Text starts from left naturally */
+}
+
+.heroContentFullBleedLeft .textConstraintBlock {
+  flex: 0 0 50%; /* Text takes only left side */
+}
+
 .leftBlock {
   flex: 0 0 50%;
   height: 100%;
@@ -80,13 +89,6 @@
   z-index: 1; /* Metnin altında */
 }
 
-.imageLayerLeft {
-  /* controlled by flex */
-}
-
-.imageLayerRight {
-  /* controlled by flex reverse */
-}
 
 /* Full Bleed specifically for Center Banner Background */
 .heroContentCenterImageLayer {
@@ -129,6 +131,69 @@
   pointer-events: none;
 }
 
+.imageLayerFullBleed {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.imageLayerFullBleed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(245,243,241,0.98) 0%,
+    rgba(245,243,241,0.92) 25%,
+    rgba(245,243,241,0.75) 40%,
+    rgba(245,243,241,0.4) 53%,
+    rgba(245,243,241,0.1) 63%,
+    rgba(245,243,241,0.3) 75%,
+    rgba(245,243,241,0.55) 85%,
+    rgba(245,243,241,0.85) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.imageLayerFullBleedHeavy {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.imageLayerFullBleedHeavy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(245,243,241,0.99) 0%,
+    rgba(245,243,241,0.98) 35%,
+    rgba(245,243,241,0.92) 50%,
+    rgba(245,243,241,0.75) 65%,
+    rgba(245,243,241,0.4) 80%,
+    rgba(245,243,241,0.5) 90%,
+    rgba(245,243,241,0.9) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
 .strictBottomImage {
   mix-blend-mode: multiply; /* Pürüzsüz PNG entegrasyonu */
 }
@@ -145,6 +210,11 @@
 .imageAnchorCenter {
   object-fit: cover !important;
   object-position: center center !important; 
+}
+
+.imageAnchorFullBleed {
+  object-fit: cover !important;
+  object-position: right center !important; 
 }
 
 /* --- SAĞ BLOK (METİN) --- */

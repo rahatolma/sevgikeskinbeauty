@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./iletisim.module.css";
+import ContactForm from "@/components/ContactForm";
 
 export const metadata = {
   title: "İletişim | Sevgi Keskin Beauty",
@@ -76,28 +77,11 @@ export default function IletisimPage() {
 
               {/* Sağ Taraf - Minimalist Form */}
               <div className={styles.formCol}>
-                 <form className={styles.contactForm}>
-                    <div className={styles.inputGroup}>
-                       <input type="text" id="name" placeholder=" " required />
-                       <label htmlFor="name">TAM ADINIZ</label>
-                    </div>
-                    <div className={styles.inputGroup}>
-                       <input type="email" id="email" placeholder=" " required />
-                       <label htmlFor="email">E-POSTA ADRESİNİZ</label>
-                    </div>
-                    <div className={styles.inputGroup}>
-                       <input type="tel" id="phone" placeholder=" " />
-                       <label htmlFor="phone">TELEFON NUMARANIZ</label>
-                    </div>
-                    <div className={styles.inputGroup}>
-                       <textarea id="message" rows={5} placeholder=" " required></textarea>
-                       <label htmlFor="message">MESAJINIZ (CİLT TİPİNİZ VEYA BEKLENTİNİZ)</label>
-                    </div>
-                    
-                    <button type="submit" className={styles.submitBtn}>
-                       Gönder
-                    </button>
-                 </form>
+                 <ContactForm 
+                    formClass={styles.contactForm} 
+                    inputGroupClass={styles.inputGroup} 
+                    submitBtnClass={styles.submitBtn} 
+                 />
               </div>
 
            </div>

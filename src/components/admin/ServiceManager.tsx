@@ -60,6 +60,7 @@ export default function ServiceManager() {
   const [editingCat, setEditingCat] = useState<Partial<Category> | null>(null);
   const [editingSrv, setEditingSrv] = useState<Partial<Service> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'category' | 'service', id: string, name: string } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -210,19 +211,24 @@ export default function ServiceManager() {
     }
   };
 
-  const handleDeleteCategory = async (id: string, e: React.MouseEvent) => {
+  const confirmDeleteCategory = (cat: Category, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm("Bu kategoriyi silmek istediğinizden emin misiniz? (İçindeki servisler de silinir)")) return;
-    
+    setDeleteConfirm({ type: 'category', id: cat.id, name: cat.name });
+  };
+
+  const executeDeleteCategory = async () => {
+    if (!deleteConfirm) return;
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
-        const { error } = await supabase.from('service_categories').delete().eq('id', id);
+        const { error } = await supabase.from('service_categories').delete().eq('id', deleteConfirm.id);
         if (error) throw error;
       }
-      setCategories(cats => cats.filter(c => c.id !== id));
-      if (selectedCategoryId === id) setSelectedCategoryId(null);
+      setCategories(cats => cats.filter(c => c.id !== deleteConfirm.id));
+      if (selectedCategoryId === deleteConfirm.id) setSelectedCategoryId(null);
     } catch (e: any) {
       alert(e.message || "Silinirken hata oluştu.");
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -298,18 +304,23 @@ export default function ServiceManager() {
     }
   };
 
-  const handleDeleteService = async (id: string, e: React.MouseEvent) => {
+  const confirmDeleteService = (srv: Service, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!window.confirm("Bu servisi silmek istediğinizden emin misiniz?")) return;
-    
+    setDeleteConfirm({ type: 'service', id: srv.id, name: srv.name });
+  };
+
+  const executeDeleteService = async () => {
+    if (!deleteConfirm) return;
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
-        const { error } = await supabase.from('services').delete().eq('id', id);
+        const { error } = await supabase.from('services').delete().eq('id', deleteConfirm.id);
         if (error) throw error;
       }
-      setServices(srvs => srvs.filter(s => s.id !== id));
+      setServices(srvs => srvs.filter(s => s.id !== deleteConfirm.id));
     } catch (e: any) {
       alert(e.message || "Silinirken hata oluştu.");
+    } finally {
+      setDeleteConfirm(null);
     }
   };
 
@@ -358,7 +369,7 @@ export default function ServiceManager() {
                           </div>
                           <div className={styles.itemActions}>
                             <button className={styles.iconBtn} onClick={(e) => openEditCategoryModal(cat, e)}><Edit2 size={14} /></button>
-                            <button className={styles.iconBtnDanger} onClick={(e) => handleDeleteCategory(cat.id, e)}><Trash2 size={14} /></button>
+                            <button className={styles.iconBtnDanger} onClick={(e) => confirmDeleteCategory(cat, e)}><Trash2 size={14} /></button>
                           </div>
                         </div>
                       )}
@@ -432,7 +443,7 @@ export default function ServiceManager() {
                             </div>
                             <div className={styles.itemActions} style={{ opacity: snapshot.isDragging ? 0 : 1 }}>
                               <button className={styles.iconBtn} onClick={(e) => openEditServiceModal(srv, e)}><Edit2 size={14} /></button>
-                              <button className={styles.iconBtnDanger} onClick={(e) => handleDeleteService(srv.id, e)}><Trash2 size={14} /></button>
+                              <button className={styles.iconBtnDanger} onClick={(e) => confirmDeleteService(srv, e)}><Trash2 size={14} /></button>
                             </div>
                           </div>
                         )}
@@ -765,7 +776,28 @@ export default function ServiceManager() {
           </div>
         </div>
       )}
-
+      {/* CONFIRM DELETE MODAL */}
+      {deleteConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} style={{ maxWidth: '450px', textAlign: 'center', padding: '3rem 2rem' }}>
+             <h2 className={styles.modalTitle} style={{ color: 'var(--color-gold)', fontSize: '1.8rem', marginBottom: '1rem' }}>Emin misiniz?</h2>
+             <p style={{ margin: '1rem 0', color: 'var(--color-gray)', fontSize: '1.1rem', lineHeight: '1.6' }}>
+               <strong style={{ color: 'var(--color-dark)' }}>{deleteConfirm.name}</strong> adlı {deleteConfirm.type === 'category' ? 'kategoriyi' : 'servisi'} kalıcı olarak silmek istediğinize emin misiniz?
+               {deleteConfirm.type === 'category' && " (İçindeki servisler de kalıcı olarak silinecektir)"}
+             </p>
+             <div className={styles.modalActions} style={{ justifyContent: 'center', marginTop: '2.5rem', display: 'flex', gap: '1rem' }}>
+                <button className={styles.btnCancel} style={{ padding: '0.75rem 2rem', fontSize: '1.05rem' }} onClick={() => setDeleteConfirm(null)}>Vazgeç</button>
+                <button 
+                  className={styles.btnSubmit} 
+                  style={{ backgroundColor: '#ef4444', borderColor: '#ef4444', padding: '0.75rem 2rem', fontSize: '1.05rem' }}
+                  onClick={deleteConfirm.type === 'category' ? executeDeleteCategory : executeDeleteService}
+                >
+                  Evet, Sil
+                </button>
+             </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

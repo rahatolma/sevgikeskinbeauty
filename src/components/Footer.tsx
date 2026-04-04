@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styles from "./Footer.module.css";
 import Image from "next/image";
+import NewsletterForm from "./NewsletterForm";
 export default function Footer() {
   return (
     <footer className={styles.footer}>
@@ -46,10 +47,11 @@ export default function Footer() {
             <p className={styles.footerText} style={{ marginBottom: '1.5rem' }}>
               Yeni kampanyalar ve size özel bakım önerileri için bültene katılın
             </p>
-            <div className={styles.newsletterForm}>
-              <input type="email" placeholder="E-POSTA ADRESİNİZ" className={styles.newsletterInput} />
-              <button className={styles.newsletterBtn}>ABONE OL</button>
-            </div>
+            <NewsletterForm 
+              containerClass={styles.newsletterForm} 
+              inputClass={styles.newsletterInput} 
+              btnClass={styles.newsletterBtn} 
+            />
           </div>
         </div>
         <div className={styles.footerBottom}>

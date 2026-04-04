@@ -16,7 +16,7 @@ type BookingRequest = {
   specialist_id: string | null;
   requested_date: string;
   requested_time: string;
-  status: string; // Bekliyor, Onaylandı, Tamamlandı, İptal
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   customer_note: string | null;
   internal_note: string | null;
   cancellation_reason: string | null;
@@ -26,6 +26,15 @@ type BookingRequest = {
   category_name?: string;
   specialist_name?: string;
 };
+
+const STATUS_MAPPING = {
+  'pending': 'Bekliyor',
+  'confirmed': 'Onaylandı',
+  'completed': 'Tamamlandı',
+  'cancelled': 'İptal'
+} as const;
+
+type DbStatus = keyof typeof STATUS_MAPPING;
 
 type TimelineLog = {
     id: string;
@@ -56,7 +65,7 @@ export default function ReservationsManager() {
         .select(`
           *,
           service:services(name, category:service_categories(name)),
-          specialist:specialists(name)
+          specialist:specialists(full_name)
         `)
         .order('created_at', { ascending: false });
 
@@ -67,7 +76,7 @@ export default function ReservationsManager() {
         ...b,
         service_name: b.service?.name || '-',
         category_name: b.service?.category?.name || '-',
-        specialist_name: b.specialist?.name || 'Atanmadı'
+        specialist_name: b.specialist?.full_name || 'Atanmadı'
       }));
 
       setBookings(formattedData);
@@ -103,7 +112,7 @@ export default function ReservationsManager() {
     setLogs([]);
   };
 
-  const updateStatus = async (bookingId: string, newStatus: string, logMessage: string) => {
+  const updateStatus = async (bookingId: string, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled', logMessage: string) => {
      try {
        // Update main status
        const { error: updateError } = await supabase
@@ -113,10 +122,11 @@ export default function ReservationsManager() {
        
        if (updateError) throw updateError;
 
-       // Insert into Timeline Log
+       // Insert into Timeline Log (Using Turkish UI string for display)
+       const uiAction = STATUS_MAPPING[newStatus] || newStatus;
        const { error: logError } = await supabase
          .from('booking_timeline_logs')
-         .insert([{ booking_id: bookingId, action: newStatus, note: logMessage }]);
+         .insert([{ booking_id: bookingId, action: uiAction, note: logMessage }]);
        
        if (logError) throw logError;
 
@@ -135,18 +145,20 @@ export default function ReservationsManager() {
 
   // derived metrics
   const todayCount = bookings.filter(b => b.requested_date === new Date().toISOString().split('T')[0]).length;
-  const pendingCount = bookings.filter(b => b.status === 'Bekliyor').length;
-  const approvedCount = bookings.filter(b => b.status === 'Onaylandı').length;
+  const pendingCount = bookings.filter(b => b.status === 'pending').length;
+  const approvedCount = bookings.filter(b => b.status === 'confirmed').length;
   const totalCount = bookings.length;
 
   // Render Status Badge helper
   const renderBadge = (status: string) => {
+    // If the status isn't in our mapping dictionary, default to lowercasing it
+    const uiLabel = STATUS_MAPPING[status as DbStatus] || status;
     switch (status) {
-      case 'Bekliyor': return <span className={`${styles.badge} ${styles.badgePending}`}>Bekliyor</span>;
-      case 'Onaylandı': return <span className={`${styles.badge} ${styles.badgeConfirmed}`}>Onaylandı</span>;
-      case 'Tamamlandı': return <span className={`${styles.badge} ${styles.badgeCompleted}`}>Tamamlandı</span>;
-      case 'İptal': return <span className={`${styles.badge} ${styles.badgeCancelled}`}>İptal</span>;
-      default: return <span className={`${styles.badge}`}>{status}</span>;
+      case 'pending': return <span className={`${styles.badge} ${styles.badgePending}`}>{uiLabel}</span>;
+      case 'confirmed': return <span className={`${styles.badge} ${styles.badgeConfirmed}`}>{uiLabel}</span>;
+      case 'completed': return <span className={`${styles.badge} ${styles.badgeCompleted}`}>{uiLabel}</span>;
+      case 'cancelled': return <span className={`${styles.badge} ${styles.badgeCancelled}`}>{uiLabel}</span>;
+      default: return <span className={`${styles.badge}`}>{uiLabel}</span>;
     }
   };
 
@@ -155,7 +167,11 @@ export default function ReservationsManager() {
                         b.customer_phone.includes(searchTerm) || 
                         (b.service_name && b.service_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchStatus = statusFilter === 'Tümü' || b.status === statusFilter;
+    // Reverse lookup to find the DB enum from the UI string
+    const targetDbEntry = Object.entries(STATUS_MAPPING).find(([k, v]) => v === statusFilter);
+    const dbStatusFilter = targetDbEntry ? targetDbEntry[0] : null;
+
+    const matchStatus = statusFilter === 'Tümü' || b.status === dbStatusFilter;
     
     return matchSearch && matchStatus;
   });
@@ -350,20 +366,20 @@ export default function ReservationsManager() {
 
             {/* Aksiyon Footer */}
             <div className={styles.drawerFooter}>
-                {selectedBooking.status === 'Bekliyor' && (
-                    <button className={`${styles.btnAction} ${styles.btnConfirm}`} onClick={() => updateStatus(selectedBooking.id, 'Onaylandı', 'Randevu işletme tarafından onaylandı.')}>
+                {selectedBooking.status === 'pending' && (
+                    <button className={`${styles.btnAction} ${styles.btnConfirm}`} onClick={() => updateStatus(selectedBooking.id, 'confirmed', 'Randevu işletme tarafından onaylandı.')}>
                         Onayla
                     </button>
                 )}
-                {(selectedBooking.status === 'Bekliyor' || selectedBooking.status === 'Onaylandı') && (
+                {(selectedBooking.status === 'pending' || selectedBooking.status === 'confirmed') && (
                     <>
                         <button className={`${styles.btnAction}`} style={{background:'#f3f4f6', color:'#111827'}}>
                             Uzman Ata
                         </button>
-                        <button className={`${styles.btnAction} ${styles.btnComplete}`} onClick={() => updateStatus(selectedBooking.id, 'Tamamlandı', 'Randevu tamamlandı olarak işaretlendi.')}>
+                        <button className={`${styles.btnAction} ${styles.btnComplete}`} onClick={() => updateStatus(selectedBooking.id, 'completed', 'Randevu tamamlandı olarak işaretlendi.')}>
                             Tamamlandı İşaretle
                         </button>
-                        <button className={`${styles.btnAction} ${styles.btnCancel}`} onClick={() => updateStatus(selectedBooking.id, 'İptal', 'Randevu iptal edildi.')}>
+                        <button className={`${styles.btnAction} ${styles.btnCancel}`} onClick={() => updateStatus(selectedBooking.id, 'cancelled', 'Randevu iptal edildi.')}>
                             İptal Et
                         </button>
                     </>

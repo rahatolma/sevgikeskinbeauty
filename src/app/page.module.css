@@ -331,13 +331,13 @@
 
 /* Kapsayıcı content'i ayarlayıp butonu margin'siz doğal akışa oturtuyoruz ama opacity 0 */
 .btnContainer {
-  height: 0;
+  max-height: 0;
   overflow: hidden;
-  transition: height 0.4s ease, margin-top 0.4s ease;
+  transition: max-height 0.4s ease, margin-top 0.4s ease;
 }
 
 .serviceCard:hover .btnContainer {
-  height: 45px;
+  max-height: 70px; /* İhtiyaca göre 70px'e kadar esner */
   margin-top: 1rem;
 }
 

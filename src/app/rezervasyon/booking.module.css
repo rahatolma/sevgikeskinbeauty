@@ -31,88 +31,51 @@
   color: var(--color-gold);
 }
 
-/* 2-Column Split */
+/* UX Layout (50/50 Split) */
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-light-alt); /* match the body! */
+}
+
+.mainSection {
+  padding: 4rem 0 10rem 0;
+}
+
 .splitLayout {
   display: flex;
-  flex: 1;
-  max-width: 1600px; /* Align to global container */
-  margin: 0 auto;
+  flex-direction: row; 
+  align-items: flex-start;
+  gap: 6rem;
   width: 100%;
-  padding: 0 4rem; /* Match global container padding */
 }
 
-.infoColumn {
-  flex: 1;
-  padding: 4rem 3rem 4rem 0; /* Left padding removed because splitLayout handles it */
-  background-color: var(--color-light-alt);
-  border-right: 1px solid rgba(0,0,0,0.05);
-}
-
-.bookingColumn {
-  flex: 1.2;
-  padding: 4rem 0 4rem 3rem; /* Right padding removed to flush white box edge */
+/* Sol Kolon: Menü */
+.leftColumn {
+  flex: 0 0 300px;
   background-color: transparent;
-  min-height: 800px;
+  border-right: none;
 }
 
-/* --- LEFT COLUMN UX (Sticky Tracker) --- */
-.stickyInfo {
-  position: sticky;
-  top: 150px;
+/* Sağ Kolon: Akış */
+.rightColumn {
+  flex: 1;
+  background-color: transparent; 
 }
 
 .mainTitle {
   font-family: var(--font-serif);
-  font-size: 3.5rem;
-  line-height: 1.1;
+  font-weight: 700;
+  font-size: 1.8rem;
   color: var(--color-dark);
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
+  margin-top: -10px; /* Aligns baseline identically to Hizmetlerimiz */
 }
 
 .subTitle {
   font-size: 1.1rem;
   color: var(--color-gray);
-  margin-bottom: 3rem;
-  line-height: 1.5;
-}
-
-.stepsList {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.stepItem {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  color: rgba(0,0,0,0.3); /* Pasif State */
-  transition: var(--transition-fast);
-  font-weight: 500;
-}
-
-.stepIcon {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: rgba(0,0,0,0.05); /* Pasif ikon */
-  margin-right: 1rem;
-  font-size: 0.8rem;
-  transition: var(--transition-fast);
-}
-
-.stepItemActive {
-  color: var(--color-dark);
-}
-
-.stepItemActive .stepIcon {
-  background-color: var(--color-gold);
-  color: white;
 }
 
 /* Stepper (İlerleme Çubuğu) */
@@ -134,103 +97,122 @@
   color: var(--color-gold);
 }
 
-/* Kategori & Servisler */
-.categoryGroup {
-  margin-bottom: 1rem;
-  border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 6px;
-  background-color: var(--color-light); /* Make Floating White Cards */
-  overflow: hidden;
-}
-
-.categoryHeader {
-  padding: 1.2rem 1.5rem;
-  cursor: pointer;
+/* Step 1: Admin Tarzı Grid */
+.adminCategoryGrid {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-primary);
-  font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--color-dark);
-  transition: var(--transition-fast);
+  gap: 2rem;
+  align-items: flex-start;
 }
 
-.categoryHeaderLeft {
+@media (max-width: 900px) {
+  .adminCategoryGrid {
+    flex-direction: column;
+  }
+}
+
+.adminSidebar {
+  flex: 0 0 320px;
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  list-style: none; /* Uçur noktaları! */
+  margin: 0;
+  padding: 0;
 }
 
-.categoryTitleRow {
+.adminCategoryBtn {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-dark);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-left: 4px solid transparent;
+  padding: 0.8rem 1rem;
+  margin-left: -4px;
+  width: calc(100% + 4px);
+  border-radius: 4px;
+}
+
+.adminCategoryBtn:hover {
+  color: var(--color-gold);
+  background-color: rgba(0,0,0,0.01);
+}
+
+.adminCategoryBtn.active {
+  color: var(--color-dark);
+  font-weight: 700;
+  background-color: #f7f3ef;
+  border-left-color: var(--color-gold);
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.02);
+}
+
+.adminCategoryTitleRow {
   display: flex;
   align-items: center;
-  margin-bottom: 0.3rem;
 }
 
-.categoryTitleName {
-  font-weight: 500;
+.adminCategoryTitle {
+  /* Using serif font inherited from parent */
+}
+
+.adminCategoryCount {
+  display: none; /* Hide the count to match Hizmetlerimiz */
+}
+
+.adminServicesList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.adminSectionTitle {
+  font-family: var(--font-serif);
+  font-size: 3rem;
   color: var(--color-dark);
-}
-
-.categoryDesc {
-  font-size: 0.85rem;
-  color: var(--color-gray);
-  margin-left: 2rem; /* Align with text, skipping icon */
+  margin-bottom: 2rem;
   font-weight: 400;
 }
 
-.categoryIcon {
-  margin-right: 0.8rem;
-  font-size: 1.2rem;
-}
-
-.chevron {
-  transition: transform 0.3s ease;
-  color: var(--color-gray);
-}
-
-.chevron.open {
-  transform: rotate(180deg);
-}
-
-.serviceList {
-  padding: 0 1.5rem;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-out;
-  background-color: var(--color-light);
-}
-
-.serviceList.open {
-  max-height: 800px;
-}
-
-.serviceItem {
-  padding: 1.2rem 0;
-  border-top: 1px solid rgba(0,0,0,0.05);
+.adminServiceCard {
+  background: transparent;
+  border: none;
+  border-left: 4px solid var(--color-gold);
+  padding: 0.5rem 0 0.5rem 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
 }
 
-.serviceInfo {
-  flex: 1;
+.adminServiceCard:hover {
+  opacity: 0.8;
 }
 
-.serviceName {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-dark);
-  margin-bottom: 0.2rem;
+.buttonSelect {
+  background-color: var(--color-gold);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
 }
 
-.serviceDetails {
-  font-size: 0.9rem;
-  color: var(--color-gray);
+.buttonSelect:hover {
+  background-color: #b99324;
 }
 
 /* List Items (Danışman / Zaman) */

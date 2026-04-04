@@ -10,7 +10,7 @@ interface HeroSliderProps {
   ctaLink?: string;
   ctaNote?: string;
   reverse?: boolean; // Deprecated: Use alignment
-  alignment?: "left" | "right" | "center";
+  alignment?: "left" | "right" | "center" | "fullbleed-left" | "fullbleed-left-heavy";
 }
 
 export default function HeroSlider({
@@ -39,6 +39,14 @@ export default function HeroSlider({
     anchorClass = styles.imageAnchorCenter;
     contentClass = styles.heroContentCenter;
   }
+  
+  const isFullBleedLeft = alignment === "fullbleed-left" || alignment === "fullbleed-left-heavy";
+  if (isFullBleedLeft) {
+    imageLayerClass = alignment === "fullbleed-left-heavy" ? styles.imageLayerFullBleedHeavy : styles.imageLayerFullBleed;
+    anchorClass = styles.imageAnchorFullBleed;
+    contentClass = styles.heroContentFullBleedLeft;
+  }
+
   return (
     <section className={`${styles.heroRoot} ${isCenter ? styles.heroRootCenter : ''}`}>
       
@@ -46,7 +54,7 @@ export default function HeroSlider({
       <div className={`${styles.heroContent} ${contentClass}`}>
         
         {/* --- GÖRSEL BLOĞU (FLEX ITEM) --- */}
-        {!isCenter && (
+        {(!isCenter && !isFullBleedLeft) && (
           <div className={`${styles.leftBlock} ${imageLayerClass}`}>
             <div className={styles.imageLayer}>
               <Image 
@@ -83,10 +91,10 @@ export default function HeroSlider({
 
       </div>
 
-      {/* MERKEZ GÖRSELİ (MUTLAK ARKA PLAN, FULL BLEED) */}
-      {isCenter && (
+      {/* MERKEZ GÖRSELİ VEYA FULLBLEED GÖRSEL (MUTLAK ARKA PLAN, FULL BLEED) */}
+      {(isCenter || isFullBleedLeft) && (
         <div className={styles.heroContentCenterImageLayer}>
-           <div className={styles.imageLayerCenter}>
+           <div className={imageLayerClass}>
              <Image 
                 src={imageSrc} 
                 alt="Sevgi Keskin Beauty" 
