@@ -1,0 +1,61 @@
+.feedWrapper {
+  width: 100%;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.imageBox {
+  flex: 1; /* Hepsi eşit genişlikte */
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1 / 1; /* Sqaure oranını korur, resimler yarım çıkmaz */
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(80, 72, 62, 0.6); /* Koyu kahve transparan */
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+
+.iconWrapper {
+  color: var(--color-light);
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+
+.imageBox:hover .overlay {
+  opacity: 1;
+}
+
+.imageBox:hover .iconWrapper {
+  transform: translateY(0);
+}
+
+.imageBox:hover .image {
+  transform: scale(1.05);
+}
+
+@media (max-width: 992px) {
+  /* No fixed height needed */
+}
+
+@media (max-width: 768px) {
+  .feedWrapper {
+    flex-wrap: wrap;
+  }
+  .imageBox {
+    flex: 0 0 50%;
+  }
+}

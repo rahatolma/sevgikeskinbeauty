@@ -1,0 +1,253 @@
+.testimonialSection {
+  padding: 8rem 0 2rem; /* Alt boşluk CSS paddingi sıfırlandı */
+  background-color: #fcfcfc;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 5rem;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-family: var(--font-primary);
+  font-size: 1.15rem;
+  color: var(--color-gray);
+  font-weight: 300;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  margin-bottom: 2.5rem; /* Azaltıldı ki ok tuşu/linke yakın olsun */
+  align-items: center; 
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  min-height: 280px;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+.highlightCard {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  transform: scale(1.05); /* Yükseltilmiş merkez eleman */
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+  z-index: 2;
+  position: relative;
+}
+
+.highlightCard:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
+}
+
+.highlightBadge {
+  position: absolute;
+  top: -12px;
+  left: 2rem;
+  background-color: var(--color-dark);
+  color: var(--color-gold);
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.stars {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.text {
+  font-family: var(--font-primary);
+  color: var(--color-dark); /* Siyaha çekilen elit review metni */
+  font-size: 1.1rem; /* Daha dominant */
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-weight: 300;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Metinler detaylandığı için genişletildi */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.name {
+  font-family: var(--font-primary);
+  color: var(--color-gray);
+  font-weight: 700;
+  font-size: 0.95rem; /* İsim hafif kıstırılıp geri çekildi */
+  margin-top: auto;
+}
+
+/* Social Proof (Genel Değerlendirme) */
+.socialProof {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.socialStars {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.socialText {
+  font-family: var(--font-primary);
+  color: var(--color-dark);
+  font-size: 1.15rem; /* Azaltıldı */
+}
+
+.socialText span {
+  font-weight: 800;
+  font-size: 1.6rem; /* Büyük vurgu */
+}
+
+.socialSubtext {
+  font-family: var(--font-primary);
+  color: #B58A59; /* Soft Gold Highlight numbers */
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+}
+
+/* YORUMLARA GİDİŞ ALANI (GRİD ALTINDA) */
+.allReviewsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 4rem; /* Social Proof'tan ayırır */
+}
+
+.allReviewsBtn {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-dark);
+  text-decoration: none;
+  background-color: transparent;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.85rem 2.5rem;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.allReviewsBtn:hover {
+  border-color: var(--color-dark);
+  background-color: #fafafa;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.allReviewsSubtext {
+  font-family: var(--font-primary);
+  color: var(--color-gray);
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+/* Call to action */
+.ctaBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.ctaText {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--color-dark);
+}
+
+.ctaSubtext {
+  color: var(--color-gray);
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+
+.ctaBtn {
+  display: inline-block;
+  background-color: transparent;
+  color: var(--color-dark);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 1rem 3rem;
+  border-radius: 4px;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  text-decoration: none;
+  border: 1px solid var(--color-dark);
+}
+
+.ctaBtn:hover {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .highlightCard {
+    transform: none; 
+  }
+  .highlightCard:hover {
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .title {
+    font-size: 2.2rem;
+  }
+  .ctaText {
+    font-size: 1.5rem;
+  }
+}

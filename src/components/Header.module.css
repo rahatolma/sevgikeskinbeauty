@@ -1,0 +1,96 @@
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 0;
+  z-index: 1000;
+  background-color: var(--color-light-alt); /* Cream Background to match the site */
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoLink {
+  display: block;
+}
+
+.logoWrapper {
+  position: relative;
+  width: 220px; 
+  height: 65px; /* Logo %10 Ekstra Büyütüldü */
+}
+
+.logoImage {
+  object-fit: contain;
+  object-position: left center;
+}
+
+.nav {
+  display: flex;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.navLink {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--color-dark);
+  letter-spacing: 1px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-dark);
+  transition: width 0.3s ease;
+}
+
+.navLink:hover {
+  color: var(--color-gold);
+}
+
+.navLink:hover::after {
+  width: 100%;
+  background-color: var(--color-gold);
+}
+
+.navBookingBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b352d; /* Hero ile aynı kahve */
+  color: var(--color-light);
+  padding: 0.9rem 2.5rem; /* Header'a yakışacak şekilde kalıplı */
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.navBookingBtn:hover {
+  background-color: #24201b;
+}
+
+@media (max-width: 992px) {
+  .nav {
+    display: none; /* Mobil menü ileriki fazlarda hamburger menüyle açılır */
+  }
+}

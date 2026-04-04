@@ -1,0 +1,176 @@
+.pageContainer {
+  min-height: 100vh;
+  background-color: #fcfcfc;
+}
+
+/* HERO SECTION */
+.heroSection {
+  padding: 12rem 0 6rem;
+  background-color: #24201b; /* Çok asil, dark bir karşılama */
+  color: var(--color-light);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+/* CONTENT & FILTERS */
+.contentSection {
+  padding: 5rem 0 8rem;
+}
+
+.filterWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.filterBtn {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.75rem 1.8rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterBtn:hover {
+  border-color: var(--color-dark);
+  color: var(--color-dark);
+}
+
+.filterBtn.active {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  border-color: var(--color-dark);
+}
+
+/* MASONRY GRID */
+.masonryGrid {
+  column-count: 3;
+  column-gap: 2rem;
+}
+
+.card {
+  break-inside: avoid;
+  margin-bottom: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.stars {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.categoryBadge {
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #B58A59;
+  background-color: rgba(212, 175, 55, 0.08); /* Hafif gold zemin */
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+}
+
+.text {
+  font-family: var(--font-primary);
+  color: var(--color-dark);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+/* Yazar Profil Alanı */
+.authorArea {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(0,0,0,0.04);
+  padding-top: 1.5rem;
+}
+
+.authorInitial {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+}
+
+.name {
+  font-family: var(--font-primary);
+  color: var(--color-gray);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .masonryGrid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 10rem 1.5rem 4rem;
+  }
+  .title {
+    font-size: 2.5rem;
+  }
+  .masonryGrid {
+    column-count: 1;
+  }
+  .filterWrapper {
+    gap: 0.5rem;
+  }
+  .filterBtn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,529 @@
+.pageWrapper {
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--color-light); /* Krem zemin genelinde */
+}
+
+/* 1. HERO SECTION (ANA SAYFA KLONU) */
+.heroRoot {
+  width: 100%;
+  height: 800px;
+  background-color: var(--color-light-alt);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroContentGrid {
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 5%;
+  height: 800px;
+  display: flex;
+  margin: 0 auto;
+  position: relative;
+}
+
+.heroLeftBlock {
+  flex: 0 0 50%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end; 
+}
+
+.heroImageLayer {
+  position: absolute;
+  bottom: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.heroStrictBottomImage {
+  object-fit: cover !important;
+  object-position: bottom center !important; 
+  mix-blend-mode: multiply; /* Arkaplanı eritip png effecti verir */
+}
+
+.heroRightBlock {
+  flex: 0 0 50%;
+  height: 100%;
+  position: relative;
+}
+
+.heroTextWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center; 
+  padding-left: 2rem; 
+}
+
+.heroTextLayer {
+  position: relative;
+  width: 90%;
+  z-index: 10;
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  line-height: 1.15;
+  color: var(--color-dark);
+  margin-bottom: 2rem;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+.heroSubtitle {
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  color: #403a32;
+  max-width: 85%;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  white-space: pre-line;
+}
+
+.ctaGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b352d;
+  color: var(--color-light);
+  padding: 1.2rem 3.8rem;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btnPrimary:hover {
+  background-color: #24201b;
+}
+
+.ctaNote {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: #5a5246;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  margin-left: 0.2rem;
+}
+
+/* 2. STORY SECTION (DERGI MODU) */
+.storySection {
+  padding: 8rem 0;
+  background-color: #fff;
+}
+
+.storyGrid {
+  display: flex;
+  align-items: center;
+  gap: 6rem;
+}
+
+.storyContent {
+  flex: 1;
+}
+
+.storyImageWrapper {
+  flex: 0 0 45%;
+  position: relative;
+  height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.storyImage {
+  object-fit: cover;
+}
+
+.storyTitle {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.storyLead {
+  font-family: var(--font-serif);
+  font-size: 2.3rem;
+  color: var(--color-dark);
+  line-height: 1.4;
+  margin-bottom: 2.5rem;
+}
+
+.storyParagraph {
+  font-family: var(--font-primary);
+  font-size: 1.15rem;
+  color: var(--color-gray);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* 3. FOUNDER SECTION */
+.founderSection {
+  padding: 6rem 0;
+  background-color: #fff;
+  border-top: 1px solid rgba(0,0,0,0.03);
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.founderGrid {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+}
+
+.founderImageWrapper {
+  flex: 0 0 45%;
+  position: relative;
+  height: 650px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.founderImage {
+  object-fit: cover;
+}
+
+.founderContent {
+  flex: 1;
+}
+
+.founderName {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--color-dark);
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--color-gold);
+  padding-bottom: 1rem;
+  display: inline-block;
+}
+
+.founderName span {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-gray);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.founderQuote {
+  position: relative;
+}
+
+.founderQuote::before {
+  content: '"';
+  position: absolute;
+  top: -40px;
+  left: -20px;
+  font-family: var(--font-serif);
+  font-size: 6rem;
+  color: rgba(212, 175, 55, 0.2);
+  line-height: 1;
+}
+
+.founderQuote p {
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  color: var(--color-dark-alt);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.founderBullets {
+  list-style: none;
+  padding: 0;
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.founderBullets li {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-dark);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+}
+
+.founderBullets svg {
+  color: var(--color-gold);
+  width: 18px;
+  height: 18px;
+}
+
+.founderPhilosophy {
+  font-family: var(--font-primary);
+  font-size: 1.15rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-dark);
+  margin-top: 2rem;
+  line-height: 1.6;
+  border-left: 3px solid var(--color-gold);
+  padding-left: 1.5rem;
+}
+
+/* 4. STATS SECTION */
+.statsSection {
+  padding: 8rem 0;
+  background-color: #fff;
+  color: var(--color-dark);
+  text-align: center;
+  border-top: 1px solid rgba(0,0,0,0.03);
+}
+
+.statsGrid {
+  display: flex;
+  justify-content: center;
+  gap: 8rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statNumber {
+  font-family: var(--font-primary);
+  font-weight: 800;
+  font-size: 6rem;
+  color: var(--color-dark);
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.statLabel {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  color: var(--color-gray);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* 5. TEAM SECTION */
+.teamSection {
+  padding: 8rem 0;
+  background-color: #f7f3ef;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+}
+
+.teamCard {
+  background-color: #fff;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.teamImageWrapper {
+  width: 100%;
+  aspect-ratio: 4/5;
+  position: relative;
+  overflow: hidden;
+}
+
+.teamImage {
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.teamCardInner {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  background-color: #fff;
+  width: 100%;
+  flex: 1;
+}
+
+.teamName {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
+}
+
+.teamName span {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: block;
+  margin-top: 0.3rem;
+  font-weight: 700;
+}
+
+.teamBio {
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  color: var(--color-gray);
+  line-height: 1.5;
+  margin-top: 1rem;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.teamCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+.teamCard:hover .teamImage {
+  transform: scale(1.05);
+}
+
+.teamCard:hover .teamBio {
+  height: 60px; /* Yaklaşık 2 satır yüksekliği */
+  opacity: 1;
+  margin-top: 1rem;
+}
+
+
+
+/* 7. FINAL CTA */
+.ctaSection {
+  padding: 8rem 0;
+  background-color: var(--color-dark);
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  color: var(--color-light);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.ctaSubtitle {
+  font-family: var(--font-primary);
+  font-size: 1.2rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 3.5rem;
+}
+
+.ctaBtn {
+  display: inline-block;
+  background-color: var(--color-gold);
+  color: var(--color-dark);
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 1.4rem 3.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+.ctaBtn:hover {
+  background-color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+  .heroContentGrid {
+    flex-direction: column;
+    height: auto;
+  }
+  .heroLeftBlock {
+    flex: 0 0 400px;
+    height: 400px;
+    width: 100%;
+  }
+  .heroRightBlock {
+    padding: 3rem 1rem;
+    align-items: center;
+    width: 100%;
+  }
+  .heroTextWrapper {
+    padding-left: 0;
+    text-align: center;
+  }
+  .ctaGroup {
+    align-items: center;
+    width: 100%;
+  }
+  .founderGrid, .storyGrid {
+    flex-direction: column;
+    gap: 3rem;
+  }
+  .storyImageWrapper {
+    height: 400px;
+    width: 100%;
+  }
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  .founderImageWrapper {
+    height: 400px;
+    width: 100%;
+  }
+  .statsGrid {
+    flex-direction: column;
+    gap: 4rem;
+  }
+  .teamGrid {
+    grid-template-columns: 1fr;
+  }
+  .ctaTitle {
+    font-size: 2.5rem;
+  }
+}

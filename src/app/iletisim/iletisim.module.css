@@ -1,0 +1,296 @@
+.pageWrapper {
+  background-color: var(--color-light-alt); /* Cream */
+  min-height: 100vh;
+}
+
+/* Header */
+.pageHeader {
+  width: 100%;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--color-dark);
+  letter-spacing: 2px;
+}
+
+.nav {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+.nav a {
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--color-dark);
+  letter-spacing: 1px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav a:hover {
+  color: var(--color-gold);
+}
+
+.navBookingBtn {
+  background: transparent;
+  border: 1px solid var(--color-dark-alt);
+  padding: 0.6rem 1.8rem;
+  border-radius: 40px;
+}
+
+/* Map Area */
+.mapArea {
+  width: 100%;
+  height: 50vh;
+  min-height: 400px;
+  background-color: #EFE5DB;
+  position: relative;
+  overflow: hidden; /* Ciritcal: Clips the UI elements */
+}
+
+/* Header Gradient Overlay mask for smooth map transition */
+.mapArea::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(250, 249, 244, 1) 0%, rgba(250, 249, 244, 0) 30%);
+  pointer-events: none; /* So the map is still interactive */
+  z-index: 2;
+}
+
+.realMap {
+  position: absolute;
+  top: -150px; /* Push top frame out of bounds to hide Info Box */
+  left: -20px; /* Slight shift to hide left UI artifacts */
+  width: calc(100% + 40px);
+  height: calc(100% + 250px); /* Push bottom frame out of bounds to hide Google Logo & Satellite */
+  border: 0;
+  /* Brand estetigini bozmamasi icin greyscale / kontrast / parlaklık ayarı */
+  filter: grayscale(100%) contrast(1.1) brightness(0.95);
+  transition: var(--transition-smooth);
+}
+
+.realMap:hover {
+  filter: grayscale(70%) contrast(1.1) brightness(1); /* Biraz canlansin */
+}
+
+/* Contact Grid */
+.contactSection {
+  padding: 5rem 0; /* Reduced by 50% to close the gap */
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Left - Info */
+.subtext {
+  font-family: var(--font-primary);
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.mainTitle {
+  font-family: var(--font-serif);
+  font-size: 56px; /* Explicitly requested typography scale */
+  line-height: 1.1;
+  color: var(--color-dark);
+  margin-bottom: 4rem;
+  font-weight: 400;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.infoItem {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.icon {
+  color: var(--color-dark-alt);
+  padding-top: 5px;
+}
+
+.infoText h5 {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.infoText p {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  color: var(--color-gray);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* Right - Form Glowish Minimalist Style */
+.formCol {
+  padding-top: 2rem;
+}
+
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.inputGroup {
+  position: relative;
+}
+
+.inputGroup input,
+.inputGroup textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  padding: 1rem 0;
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  color: var(--color-dark);
+  outline: none;
+  transition: border-color 0.3s ease;
+  resize: none;
+}
+
+.inputGroup label {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: var(--color-gray);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.inputGroup input:focus,
+.inputGroup textarea:focus {
+  border-bottom-color: var(--color-dark-alt);
+}
+
+.inputGroup input:focus + label,
+.inputGroup input:not(:placeholder-shown) + label,
+.inputGroup textarea:focus + label,
+.inputGroup textarea:not(:placeholder-shown) + label {
+  top: -15px;
+  font-size: 0.75rem;
+  color: var(--color-dark-alt);
+  font-weight: 500;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  margin-top: 1rem;
+  background-color: #50483E;
+  color: var(--color-light);
+  padding: 1.2rem 4rem;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitBtn:hover {
+  background-color: #3b362e;
+}
+
+/* Footer Shared */
+.footer {
+  background-color: var(--color-dark-alt);
+  color: var(--color-light);
+  padding: 8rem 0 4rem 0;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 5rem;
+  margin-bottom: 6rem;
+}
+
+.footerCol h4 {
+  color: var(--color-gold);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.footerLogo {
+  color: var(--color-light);
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.footerText {
+  color: #c9c3be;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.footerLinks {
+  list-style: none;
+}
+
+.footerLinks li {
+  margin-bottom: 1rem;
+}
+
+.footerLinks a {
+  color: #c9c3be;
+  transition: var(--transition-fast);
+  font-size: 1.05rem;
+}
+
+.footerLinks a:hover {
+  color: var(--color-gold);
+}
+
+@media (max-width: 992px) {
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 5rem;
+  }
+  .mainTitle {
+    font-size: 3rem;
+  }
+  .footerGrid {
+    grid-template-columns: 1fr;
+  }
+}

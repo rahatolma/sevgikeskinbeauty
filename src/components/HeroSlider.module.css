@@ -1,0 +1,259 @@
+.heroRoot {
+  width: 100%;
+  height: 800px;
+  background-color: var(--color-light-alt);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroContent {
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 4rem; /* Exactly matches global .container padding */
+  height: 800px;
+  display: flex;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.heroContentReverse {
+  flex-direction: row-reverse;
+}
+
+.heroContentCenter {
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 100px;
+}
+
+.heroContentCenter .textConstraintBlock {
+  flex: 1; /* Takes full width */
+  display: flex;
+  justify-content: center;
+}
+
+.heroContentCenter .textConstraintBlock .textWrapper {
+  padding: 0;
+  justify-content: center;
+}
+
+.heroContentCenter .textLayer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heroContentCenter .subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.heroContentCenter .ctaGroupCenter {
+  align-items: center;
+}
+
+.heroContentReverse .textConstraintBlock .textWrapper {
+  padding: 0; /* Clear internal offsets */
+}
+
+.leftBlock {
+  flex: 0 0 50%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* BOUNDED IMAGE LAYERS */
+.imageLayer {
+  position: absolute;
+  top: 0;
+  bottom: 0; /* Kesinlikle tabana yapıştır */
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1; /* Metnin altında */
+}
+
+.imageLayerLeft {
+  /* controlled by flex */
+}
+
+.imageLayerRight {
+  /* controlled by flex reverse */
+}
+
+/* Full Bleed specifically for Center Banner Background */
+.heroContentCenterImageLayer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.imageLayerCenter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Takes full 100vw bleeding background */
+  height: 100%;
+}
+
+/* Gradient Overlay Mask for readable text */
+.imageLayerCenter::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Blends header color smoothly down into the image for high typography contrast */
+  background: linear-gradient(
+    to bottom, 
+    rgba(250, 249, 244, 0.95) 0%, 
+    rgba(250, 249, 244, 0.70) 50%, 
+    rgba(250, 249, 244, 0.40) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+.strictBottomImage {
+  mix-blend-mode: multiply; /* Pürüzsüz PNG entegrasyonu */
+}
+
+/* Modeline göre dışarıya demirle ve croplanmaktan kurtar */
+.imageAnchorLeft {
+  object-fit: contain !important;
+  object-position: bottom left !important; 
+}
+.imageAnchorRight {
+  object-fit: contain !important;
+  object-position: bottom right !important; 
+}
+.imageAnchorCenter {
+  object-fit: cover !important;
+  object-position: center center !important; 
+}
+
+/* --- SAĞ BLOK (METİN) --- */
+.textConstraintBlock {
+  flex: 0 0 50%;
+  height: 100%;
+  position: relative;
+  z-index: 2; /* İmajın üstünde */
+}
+
+.textWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center; /* Dikey orta */
+  padding: 0; /* Clear internal offsets entirely for true logo alignment */
+}
+
+.textLayer {
+  position: relative;
+  width: 90%;
+  z-index: 10;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  line-height: 1.15;
+  color: var(--color-dark);
+  margin-bottom: 2rem;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+.subtitle {
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  color: #403a32; /* %20 daha koyu okunabilirlik için */
+  max-width: 85%;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  font-weight: 400; /* Biraz daha okunur */
+  letter-spacing: 0.5px;
+  white-space: pre-line;
+}
+
+.ctaGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b352d; /* Daha koyu kahve */
+  color: var(--color-light);
+  padding: 1.2rem 3.8rem; /* %10 Daha büyük */
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.95rem; /* 1 tık büyüdü */
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btnPrimary:hover {
+  background-color: #24201b; /* Daha koyu bir hover efekti */
+}
+
+.ctaNote {
+  font-family: var(--font-primary);
+  font-size: 0.9rem; /* 1 tık büyüdü */
+  color: #5a5246; /* Daha belirgin bir ton */
+  font-style: normal; /* İtalik kaldırıldı */
+  letter-spacing: 0.5px;
+  margin-left: 0.2rem;
+}
+
+@media (max-width: 992px) {
+  .heroContent, .heroContentReverse {
+    flex-direction: column;
+    height: auto;
+  }
+  .imageLayer {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    left: auto;
+    right: auto;
+  }
+  .spacerBlock {
+    display: none;
+  }
+  .textConstraintBlock {
+    padding: 3rem 1rem;
+    width: 100%;
+  }
+  .textWrapper {
+    padding-left: 0;
+    text-align: center;
+  }
+  .ctaGroup {
+    align-items: center;
+    width: 100%;
+  }
+}

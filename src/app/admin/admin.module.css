@@ -1,0 +1,137 @@
+.adminContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sidebarHeader {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebarHeader h2 {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.sidebarHeader p {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.sidebarNav {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #4b5563;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.navItem.active {
+  background-color: #fef3c7; /* Gold light */
+  color: #92400e;
+}
+
+.sidebarFooter {
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  color: #ef4444;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #fee2e2;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+}
+
+/* Common Admin UI Utilities */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.pageTitle {
+  font-family: var(--font-primary);
+  font-size: 1.8rem;
+  color: #111827;
+  font-weight: 600;
+  margin: 0;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #111827;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addBtn:hover {
+  background-color: #1f2937;
+}
