@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, Plus, Edit2, Trash2, Star, CheckCircle, XCircle, ListTree } from 'lucide-react';
+import { GripVertical, Plus, Edit2, Trash2, Star, ListTree, X } from 'lucide-react';
 import styles from './ServiceManager.module.css';
 import { supabase } from '@/lib/supabase';
 
-// Types matching the Supabase Schema
 type Category = {
   id: string;
   name: string;
@@ -24,10 +23,18 @@ type Service = {
   short_description: string;
   long_description: string | null;
   price_type: 'fixed' | 'custom';
-  price: string | null; // Using string to handle numeric safely in UI
+  price: string | null; 
   is_active: boolean;
   is_featured: boolean;
   sort_order: number;
+};
+
+// Simple slug generator helper
+const generateSlug = (text: string) => {
+  return text.toString().toLowerCase().trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-');
 };
 
 export default function ServiceManager() {
@@ -36,8 +43,14 @@ export default function ServiceManager() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Active category selection to show services for that category
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
+  // Modal States
+  const [catModalOpen, setCatModalOpen] = useState(false);
+  const [srvModalOpen, setSrvModalOpen] = useState(false);
+  const [editingCat, setEditingCat] = useState<Partial<Category> | null>(null);
+  const [editingSrv, setEditingSrv] = useState<Partial<Service> | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -47,7 +60,6 @@ export default function ServiceManager() {
     setIsLoading(true);
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
-        // Fallback to Development Mock if credentials missing
         setCategories([
           { id: 'cat-1', name: 'Cilt Bakımı & Yenileyici Ritüeller', description: 'Özel uygulamalar', cover_image_url: null, icon_name: '✨', sort_order: 0 },
           { id: 'cat-2', name: 'Yüz Masajları', description: 'Rahatlatıcı masajlar', cover_image_url: null, icon_name: '💆‍♀️', sort_order: 1 }
@@ -75,17 +87,16 @@ export default function ServiceManager() {
     }
   };
 
+  // --- DRAG AND DROP ---
   const onDragEndCategory = async (result: DropResult) => {
     if (!result.destination) return;
     const items = Array.from(categories);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    // Update local state optimistic
     const updatedItems = items.map((item, index) => ({ ...item, sort_order: index }));
     setCategories(updatedItems);
 
-    // Send update to Supabase
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
         for (const item of updatedItems) {
@@ -100,14 +111,12 @@ export default function ServiceManager() {
   const onDragEndService = async (result: DropResult) => {
     if (!result.destination) return;
     
-    // Filter services for the currently selected category
     const categoryServices = services.filter(s => s.category_id === selectedCategoryId).sort((a,b) => a.sort_order - b.sort_order);
     const [reorderedItem] = categoryServices.splice(result.source.index, 1);
     categoryServices.splice(result.destination.index, 0, reorderedItem);
 
     const updatedCategoryServices = categoryServices.map((item, index) => ({ ...item, sort_order: index }));
     
-    // Merge back into main services array
     const newServices = services.map(s => {
       if (s.category_id === selectedCategoryId) {
         return updatedCategoryServices.find(u => u.id === s.id) || s;
@@ -116,7 +125,6 @@ export default function ServiceManager() {
     });
     setServices(newServices);
 
-    // Send update to Supabase
     try {
       if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
         for (const item of updatedCategoryServices) {
@@ -127,6 +135,172 @@ export default function ServiceManager() {
       console.error("Servis sıralaması güncellenirken hata");
     }
   };
+
+  // --- CATEGORY CRUD ---
+  const openNewCategoryModal = () => {
+    setEditingCat({ name: '', icon_name: '✨', description: '' });
+    setCatModalOpen(true);
+  };
+
+  const openEditCategoryModal = (cat: Category, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingCat(cat);
+    setCatModalOpen(true);
+  };
+
+  const handleSaveCategory = async () => {
+    if (!editingCat?.name) return;
+    setIsSubmitting(true);
+    
+    const isEditing = !!editingCat.id;
+    const slug = generateSlug(editingCat.name);
+    
+    const payload = {
+      name: editingCat.name,
+      slug: slug,
+      icon_name: editingCat.icon_name || '✨',
+      short_description: editingCat.description || '',
+      booking_description: editingCat.description || '',
+      is_active: true,
+      sort_order: isEditing ? editingCat.sort_order : categories.length
+    };
+
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
+        if (isEditing) {
+          const { data, error } = await supabase.from('service_categories').update(payload).eq('id', editingCat.id).select();
+          if (error) throw error;
+          if (data) {
+            setCategories(cats => cats.map(c => c.id === data[0].id ? data[0] : c));
+          }
+        } else {
+          const { data, error } = await supabase.from('service_categories').insert([payload]).select();
+          if (error) throw error;
+          if (data) {
+            setCategories([...categories, data[0]]);
+          }
+        }
+      } else {
+        // Mock fallback update
+        if (isEditing) {
+          setCategories(cats => cats.map(c => c.id === editingCat.id ? { ...c, ...editingCat } as Category : c));
+        } else {
+          setCategories([...categories, { ...editingCat, id: 'cat-' + Date.now(), sort_order: categories.length } as Category]);
+        }
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert(e.message || "Hata oluştu.");
+    } finally {
+      setIsSubmitting(false);
+      setCatModalOpen(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Bu kategoriyi silmek istediğinizden emin misiniz? (İçindeki servisler de silinir)")) return;
+    
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
+        const { error } = await supabase.from('service_categories').delete().eq('id', id);
+        if (error) throw error;
+      }
+      setCategories(cats => cats.filter(c => c.id !== id));
+      if (selectedCategoryId === id) setSelectedCategoryId(null);
+    } catch (e: any) {
+      alert(e.message || "Silinirken hata oluştu.");
+    }
+  };
+
+  // --- SERVICE CRUD ---
+  const openNewServiceModal = () => {
+    setEditingSrv({ 
+      name: '', 
+      category_id: selectedCategoryId!,
+      duration_minutes: 60,
+      price_type: 'custom',
+      price: '',
+      short_description: '',
+      is_active: true,
+      is_featured: false
+    });
+    setSrvModalOpen(true);
+  };
+
+  const openEditServiceModal = (srv: Service, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingSrv(srv);
+    setSrvModalOpen(true);
+  };
+
+  const handleSaveService = async () => {
+    if (!editingSrv?.name || !editingSrv.category_id) return;
+    setIsSubmitting(true);
+    
+    const isEditing = !!editingSrv.id;
+    const slug = generateSlug(editingSrv.name);
+    
+    const payload = {
+      name: editingSrv.name,
+      slug: slug,
+      category_id: editingSrv.category_id,
+      duration_minutes: Number(editingSrv.duration_minutes),
+      price_type: editingSrv.price_type || 'custom',
+      price: editingSrv.price_type === 'custom' ? null : Number(editingSrv.price || 0),
+      short_description: editingSrv.short_description || '',
+      is_active: editingSrv.is_active ?? true,
+      is_featured: editingSrv.is_featured ?? false,
+      sort_order: isEditing ? editingSrv.sort_order : services.filter(s => s.category_id === editingSrv.category_id).length
+    };
+
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
+        if (isEditing) {
+          const { data, error } = await supabase.from('services').update(payload).eq('id', editingSrv.id).select();
+          if (error) throw error;
+          if (data) {
+            setServices(srvs => srvs.map(s => s.id === data[0].id ? data[0] : s));
+          }
+        } else {
+          const { data, error } = await supabase.from('services').insert([payload]).select();
+          if (error) throw error;
+          if (data) {
+            setServices([...services, data[0]]);
+          }
+        }
+      } else {
+        // Mock fallback update
+        if (isEditing) {
+          setServices(srvs => srvs.map(s => s.id === editingSrv.id ? { ...s, ...editingSrv } as Service : s));
+        } else {
+          setServices([...services, { ...editingSrv, id: 'srv-' + Date.now(), sort_order: 99 } as Service]);
+        }
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert(e.message || "Hata oluştu.");
+    } finally {
+      setIsSubmitting(false);
+      setSrvModalOpen(false);
+    }
+  };
+
+  const handleDeleteService = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Bu servisi silmek istediğinizden emin misiniz?")) return;
+    
+    try {
+      if (process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
+        const { error } = await supabase.from('services').delete().eq('id', id);
+        if (error) throw error;
+      }
+      setServices(srvs => srvs.filter(s => s.id !== id));
+    } catch (e: any) {
+      alert(e.message || "Silinirken hata oluştu.");
+    }
+  };
+
 
   if (isLoading) return <div className={styles.loading}>Yükleniyor...</div>;
 
@@ -141,7 +315,7 @@ export default function ServiceManager() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <h3>Hizmet Kategorileri</h3>
-            <button className={styles.btnPrimary}><Plus size={16} /> Yeni</button>
+            <button className={styles.btnPrimary} onClick={openNewCategoryModal}><Plus size={16} /> Yeni</button>
           </div>
           
           <DragDropContext onDragEnd={onDragEndCategory}>
@@ -168,8 +342,8 @@ export default function ServiceManager() {
                             </div>
                           </div>
                           <div className={styles.itemActions}>
-                            <button className={styles.iconBtn}><Edit2 size={14} /></button>
-                            <button className={styles.iconBtnDanger}><Trash2 size={14} /></button>
+                            <button className={styles.iconBtn} onClick={(e) => openEditCategoryModal(cat, e)}><Edit2 size={14} /></button>
+                            <button className={styles.iconBtnDanger} onClick={(e) => handleDeleteCategory(cat.id, e)}><Trash2 size={14} /></button>
                           </div>
                         </div>
                       )}
@@ -191,7 +365,7 @@ export default function ServiceManager() {
                 : 'Kategori Seçin'}
             </h3>
             {selectedCategoryId && (
-              <button className={styles.btnPrimary}><Plus size={16} /> Yeni Servis</button>
+              <button className={styles.btnPrimary} onClick={openNewServiceModal}><Plus size={16} /> Yeni Servis</button>
             )}
           </div>
 
@@ -234,8 +408,8 @@ export default function ServiceManager() {
                               </div>
                             </div>
                             <div className={styles.itemActions}>
-                              <button className={styles.iconBtn}><Edit2 size={14} /></button>
-                              <button className={styles.iconBtnDanger}><Trash2 size={14} /></button>
+                              <button className={styles.iconBtn} onClick={(e) => openEditServiceModal(srv, e)}><Edit2 size={14} /></button>
+                              <button className={styles.iconBtnDanger} onClick={(e) => handleDeleteService(srv.id, e)}><Trash2 size={14} /></button>
                             </div>
                           </div>
                         )}
@@ -249,6 +423,140 @@ export default function ServiceManager() {
           )}
         </div>
       </div>
+
+      {/* CATEGORY MODAL */}
+      {catModalOpen && editingCat && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>{editingCat.id ? 'Kategoriyi Düzenle' : 'Yeni Kategori Ekle'}</h2>
+              <button className={styles.closeBtn} onClick={() => setCatModalOpen(false)}><X size={20} /></button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.formGroup}>
+                <label>Kategori İsmi</label>
+                <input 
+                  type="text" 
+                  className={styles.formInput} 
+                  placeholder="Örn: Fraksiyonel Lazer" 
+                  value={editingCat.name || ''} 
+                  onChange={e => setEditingCat({...editingCat, name: e.target.value})}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>İkon (Emoji vb.)</label>
+                <input 
+                  type="text" 
+                  className={styles.formInput} 
+                  placeholder="✨" 
+                  value={editingCat.icon_name || ''} 
+                  onChange={e => setEditingCat({...editingCat, icon_name: e.target.value})}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Açıklama</label>
+                <textarea 
+                  className={styles.formTextarea} 
+                  placeholder="Kategori hakkında kısa bilgi..." 
+                  value={editingCat.description || ''} 
+                  onChange={e => setEditingCat({...editingCat, description: e.target.value})}
+                />
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.btnCancel} onClick={() => setCatModalOpen(false)}>İptal</button>
+              <button className={styles.btnSubmit} disabled={isSubmitting || !editingCat.name} onClick={handleSaveCategory}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SERVICE MODAL */}
+      {srvModalOpen && editingSrv && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>{editingSrv.id ? 'Servisi Düzenle' : 'Yeni Servis Ekle'}</h2>
+              <button className={styles.closeBtn} onClick={() => setSrvModalOpen(false)}><X size={20} /></button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.formGroup}>
+                <label>Servis İsmi</label>
+                <input 
+                  type="text" 
+                  className={styles.formInput} 
+                  value={editingSrv.name || ''} 
+                  onChange={e => setEditingSrv({...editingSrv, name: e.target.value})}
+                />
+              </div>
+              
+              <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+                <div className={styles.formGroup}>
+                  <label>Süre (Dakika)</label>
+                  <input 
+                    type="number" 
+                    className={styles.formInput} 
+                    value={editingSrv.duration_minutes || ''} 
+                    onChange={e => setEditingSrv({...editingSrv, duration_minutes: Number(e.target.value)})}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Fiyat Tipi</label>
+                  <select 
+                    className={styles.formSelect}
+                    value={editingSrv.price_type || 'custom'}
+                    onChange={e => setEditingSrv({...editingSrv, price_type: e.target.value as 'fixed' | 'custom'})}
+                  >
+                    <option value="custom">Kişiye Özel Fiyatlandırma</option>
+                    <option value="fixed">Sabit Fiyat</option>
+                  </select>
+                </div>
+              </div>
+
+              {editingSrv.price_type === 'fixed' && (
+                <div className={styles.formGroup}>
+                  <label>Fiyat (₺)</label>
+                  <input 
+                    type="number" 
+                    className={styles.formInput} 
+                    value={editingSrv.price || ''} 
+                    onChange={e => setEditingSrv({...editingSrv, price: e.target.value})}
+                  />
+                </div>
+              )}
+
+              <div className={styles.formGroup}>
+                <label>Kısa Açıklama</label>
+                <textarea 
+                  className={styles.formTextarea} 
+                  value={editingSrv.short_description || ''} 
+                  onChange={e => setEditingSrv({...editingSrv, short_description: e.target.value})}
+                />
+              </div>
+
+              <div className={styles.checkboxGroup}>
+                <input 
+                  type="checkbox" 
+                  id="isFeatured" 
+                  checked={editingSrv.is_featured || false} 
+                  onChange={e => setEditingSrv({...editingSrv, is_featured: e.target.checked})}
+                />
+                <label htmlFor="isFeatured">⭐ Önerilen Hizmet (Ön planda gösterilir)</label>
+              </div>
+
+            </div>
+            <div className={styles.modalFooter}>
+              <button className={styles.btnCancel} onClick={() => setSrvModalOpen(false)}>İptal</button>
+              <button className={styles.btnSubmit} disabled={isSubmitting || !editingSrv.name} onClick={handleSaveService}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

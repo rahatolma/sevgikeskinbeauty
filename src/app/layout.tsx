@@ -3,6 +3,7 @@ import { Jost, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import HideOnAdmin from "@/components/HideOnAdmin";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -32,9 +33,9 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${jost.variable} ${cormorant.variable}`}>
       <body>
-        <Header />
+        <HideOnAdmin><Header /></HideOnAdmin>
         {children}
-        <Footer />
+        <HideOnAdmin><Footer /></HideOnAdmin>
       </body>
     </html>
   );
