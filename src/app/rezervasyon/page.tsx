@@ -8,6 +8,7 @@ export default function RezervasyonPage() {
   // Booking State
   const [step, setStep] = useState(1);
   const [openCategory, setOpenCategory] = useState<number | null>(null);
+  const [showAllServices, setShowAllServices] = useState(false);
   
   // Selections
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
@@ -223,6 +224,7 @@ Tarih: ${selectedDate} / ${selectedTime}
                          onClick={() => {
                              setStep(1); 
                              setOpenCategory(index);
+                             setShowAllServices(false);
                          }}
                        >
                           <div className={styles.adminCategoryTitleRow}>
@@ -244,7 +246,7 @@ Tarih: ${selectedDate} / ${selectedTime}
           {step < 5 && (
             <>
                 <h1 style={{fontFamily: 'var(--font-serif)', fontSize: '3rem', color: 'var(--color-dark)', marginBottom: '1.5rem', fontWeight: 400}}>
-                {step === 1 && "Alt Servisler"}
+                {step === 1 && "Size en uygun bakımı seçin"}
                 {step === 2 && "Uzman Seçimi"}
                 {step === 3 && "Randevu Zamanı"}
                 {step === 4 && "İletişim Bilgileri"}
@@ -267,26 +269,72 @@ Tarih: ${selectedDate} / ${selectedTime}
                         {(() => {
                           const activeIndex = openCategory !== null ? openCategory : 0;
                           const activeCategory = dynamicCategories[activeIndex];
-                          if (!activeCategory) return null;
+                          if (!activeCategory || !activeCategory.services) return null;
+                          
+                          // UX improvement: Show max 4 initially
+                          const visibleServices = showAllServices 
+                              ? activeCategory.services 
+                              : activeCategory.services.slice(0, 4);
                           
                           return (
                             <>
-                              {activeCategory.services.map((service: any, sIndex: number) => (
-                                <div key={sIndex} className={styles.adminServiceCard}>
+                              {visibleServices.map((service: any, sIndex: number) => (
+                                <div key={sIndex} className={`${styles.adminServiceCard} ${service.is_featured ? styles.featuredServiceCard : ''}`}>
                                   <div className={styles.serviceInfo}>
-                                    <h4 className={styles.serviceName}>
-                                      {service.name}
-                                      {service.is_featured && <span style={{marginLeft:'8px', backgroundColor:'#fef3c7', color:'#92400e', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px'}}>⭐ Önerilen</span>}
-                                    </h4>
-                                    <div className={styles.serviceDetails}>
-                                      <span style={{fontWeight:500, color:'var(--color-dark)'}}>{service.duration}</span> &bull; {service.price} &bull; {service.description}
+                                    <div className={styles.serviceHeadline}>
+                                        <h4 className={styles.serviceName}>{service.name}</h4>
+                                        {service.is_featured && <span className={styles.badgeFeatured}>ÖNERİLEN</span>}
+                                    </div>
+                                    <p className={styles.serviceDesc}>{service.description}</p>
+                                    <div className={styles.serviceMeta}>
+                                      <span className={styles.metaTag}>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        {service.duration}
+                                      </span> 
+                                      <span className={styles.metaTagPrice}>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                        {service.price}
+                                      </span> 
                                     </div>
                                   </div>
-                                  <button className={styles.buttonSelect} onClick={() => selectService(service, activeCategory.id)}>
-                                    Seç
-                                  </button>
+                                  <div className={styles.serviceAction}>
+                                      <button className={service.is_featured ? styles.buttonSelect : styles.buttonSecondary} onClick={() => selectService(service, activeCategory.id)}>
+                                        {service.is_featured ? "Bu Bakımı Seç" : "Seç"}
+                                      </button>
+                                  </div>
                                 </div>
                               ))}
+                              
+                              {!showAllServices && activeCategory.services.length > 4 && (
+                                  <div style={{textAlign:'center', marginTop:'1.5rem', marginBottom:'1.5rem', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '1.5rem'}}>
+                                      <button 
+                                          onClick={() => setShowAllServices(true)}
+                                          style={{
+                                              display: 'flex', 
+                                              alignItems: 'center', 
+                                              justifyContent: 'center', 
+                                              gap: '10px', 
+                                              width: '100%', 
+                                              backgroundColor: '#f7f3ef',
+                                              color: 'var(--color-dark)',
+                                              padding: '0.9rem 2.5rem',
+                                              fontFamily: 'var(--font-primary)',
+                                              fontWeight: 600,
+                                              fontSize: '0.85rem',
+                                              letterSpacing: '3px',
+                                              textTransform: 'uppercase',
+                                              border: '1px solid rgba(0, 0, 0, 0.06)',
+                                              cursor: 'pointer',
+                                              transition: 'all 0.3s ease',
+                                          }}
+                                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#ede7df'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; }}
+                                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#f7f3ef'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; }}
+                                      >
+                                          Tüm Hizmetleri Gör ({activeCategory.services.length - 4} Diğer Seçenek)
+                                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                      </button>
+                                  </div>
+                              )}
                             </>
                           );
                         })()}
@@ -303,36 +351,74 @@ Tarih: ${selectedDate} / ${selectedTime}
                     <span className={styles.stickyRecapValue}>{selectedService?.name} <span style={{opacity:0.6}}>&bull; {selectedService?.duration}</span></span>
                   </div>
 
-                  <h3 className={styles.stepBlockTitle}>Size en uygun uzmanı seçin</h3>
+                  <h3 className={styles.stepBlockTitle} style={{marginBottom: '0.5rem'}}>Uzman Ataması</h3>
+                  <p style={{fontSize: '1rem', color: '#666', marginBottom: '2rem'}}>Sistem sizin için en uygun uzmanı seçecektir</p>
 
-                  {/* Farketmez Butonu */}
-                  <div className={`${styles.listItem} ${styles.listItemHighlight}`} onClick={() => selectAdvisor({ id: 0, name: "Farketmez, Sistem Öner", role: "En erken ve uygun saat" })}>
-                    <div className={styles.avatar}>✨</div>
-                    <div className={styles.serviceInfo}>
-                      <div className={styles.serviceName}>Farketmez, Sistem Öner</div>
-                      <div className={styles.serviceDetails}>Bana en uygun, en yakın saatteki uzman atansın</div>
+                  {/* Ana Onay Kartı */}
+                  <div className={`${styles.listItem} ${styles.listItemHighlight}`} style={{flexDirection: 'column', alignItems: 'stretch', padding: '2rem', gap: '1.5rem', textAlign: 'center'}}>
+                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+                      <div className={styles.avatar} style={{width: '60px', height: '60px', fontSize: '1.5rem'}}>✨</div>
+                      <div>
+                        <div className={styles.serviceName} style={{fontSize: '1.25rem', marginBottom: '0.5rem'}}>Sistem Uzman Atayacak</div>
+                        <div className={styles.serviceDetails} style={{fontSize: '0.95rem'}}>En yakın saat ve uygunluk durumuna göre otomatik olarak en doğru uzmana yönlendirileceksiniz.</div>
+                      </div>
                     </div>
-                    <span className={styles.selectActionText}>Devam Et <span style={{fontSize:'1.1rem'}}>&rarr;</span></span>
+                    
+                    <button className={styles.buttonSelect} style={{justifyContent: 'center'}} onClick={() => selectAdvisor({ id: 0, name: "Farketmez, Sistem Öner", role: "En erken ve uygun saat" })}>
+                      Uzmanı Otomatik Ata
+                    </button>
+                    
+                    <div style={{fontSize: '0.85rem', color: '#666', marginTop: '0.5rem'}}>
+                      🛡️ Tüm uzmanlarımız MEB onaylı sertifikalı ve kendi alanında deneyimlidir.
+                    </div>
                   </div>
 
-                  {/* Uzman Listesi */}
-                  {availableSpecialists.length === 0 ? (
-                      <div style={{color:'var(--color-gray)', textAlign:'center', marginTop:'2rem'}}>Bu hizmet için atanmış özel uzman bulunmuyor. "Sistem Öner" seçeneği ile devam edebilirsiniz.</div>
-                  ) : (
-                      availableSpecialists.map((advisor) => (
-                        <div key={advisor.id} className={styles.listItem} onClick={() => selectAdvisor(advisor)}>
-                          <div className={styles.avatar}>{advisor.avatar}</div>
-                          <div className={styles.serviceInfo}>
-                            <div className={styles.serviceName}>{advisor.name}</div>
-                            <div className={styles.serviceRole}>{advisor.role}</div>
-                            <div className={styles.serviceDetails}>{advisor.description}</div>
-                          </div>
-                          <span className={styles.selectActionText}>Devam Et</span>
-                        </div>
-                      ))
+                  {/* Psikolojik Güven Bloğu */}
+                  <div style={{background: '#f8f9fa', borderRadius: '12px', padding: '1.5rem', marginTop: '1.5rem'}}>
+                    <h4 style={{fontFamily: 'var(--font-sans)', fontSize: '1rem', color: 'var(--color-dark)', marginBottom: '1rem'}}>Neden Sistem Öneriyor?</h4>
+                    <ul style={{listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem'}}>
+                      <li style={{display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#4a4a4a'}}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Size uygun olan en erken randevuyu bulur
+                      </li>
+                      <li style={{display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#4a4a4a'}}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        İşleminize özel en yetkin uzmanı eşleştirir
+                      </li>
+                      <li style={{display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#4a4a4a'}}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Gereksiz bekleme sürelerini ortadan kaldırır
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Opsiyonel Uzman Listesi (Sadece varsa gösterelim) */}
+                  {availableSpecialists.length > 0 && (
+                      <div style={{marginTop: '3rem'}}>
+                          <div style={{fontSize: '0.9rem', color: '#666', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '0.5rem', marginBottom: '1.5rem'}}>Veya kendi uzmanınızı seçin:</div>
+                          {availableSpecialists.map((advisor) => (
+                            <div key={advisor.id} className={styles.listItem} onClick={() => selectAdvisor(advisor)}>
+                              <div className={styles.avatar}>{advisor.avatar}</div>
+                              <div className={styles.serviceInfo}>
+                                <div className={styles.serviceName}>{advisor.name}</div>
+                                <div className={styles.serviceRole}>{advisor.role}</div>
+                                <div className={styles.serviceDetails}>{advisor.description}</div>
+                              </div>
+                              <div className={styles.serviceAction}>
+                                <button className={styles.buttonSecondary}>
+                                  Seç
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
                   )}
                   
-                  <button className={styles.buttonBack} onClick={handlePrevStep}>&larr; Hizmet seçimine dön</button>
+                  <div style={{textAlign: 'center', marginTop: '2rem'}}>
+                    <button className={styles.buttonBack} onClick={handlePrevStep} style={{fontSize: '1.05rem', fontWeight: 500, padding: '1rem'}}>
+                      &larr; Hizmet seçimine dön
+                    </button>
+                  </div>
                </div>
              )}
 
@@ -455,7 +541,7 @@ Tarih: ${selectedDate} / ${selectedTime}
                    ✓ Randevunuzu dilediğiniz zaman değiştirebilirsiniz
                  </p>
 
-                 <button className={styles.buttonPrimary} onClick={submitBooking} disabled={isSubmitting}>
+                 <button className={styles.buttonSelect} onClick={submitBooking} disabled={isSubmitting} style={{width: '100%', marginTop: '1.5rem'}}>
                    {isSubmitting ? 'Talebiniz İletiliyor...' : 'Randevuyu Onayla'}
                  </button>
                  <div style={{textAlign: 'left', marginTop: '1.5rem'}}>

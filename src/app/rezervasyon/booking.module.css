@@ -56,6 +56,9 @@
   flex: 0 0 300px;
   background-color: transparent;
   border-right: none;
+  position: sticky;
+  top: 177px; /* 113px Header + 64px padding-top */
+  align-self: flex-start;
 }
 
 /* Sağ Kolon: Akış */
@@ -183,37 +186,157 @@
   font-weight: 400;
 }
 
+/* SERVICE ROW STRUCTURING */
 .adminServiceCard {
-  background: transparent;
-  border: none;
-  border-left: 4px solid var(--color-gold);
-  padding: 0.5rem 0 0.5rem 1.5rem;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.1); /* Daha belirgin bir sınır */
+  border-left: 4px solid transparent;
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  transition: all 0.2s ease;
+  align-items: center;
+  transition: all 0.3s ease;
   margin-bottom: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Daha güçlü shadow ile yukarı kaldırıldı */
 }
 
 .adminServiceCard:hover {
-  opacity: 0.8;
+  background-color: #fafafa;
+  border-left: 4px solid var(--color-gold);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08); /* Hover'da daha net kalkış */
+  transform: translateY(-2px);
+}
+
+.featuredServiceCard {
+  background-color: #faf5ed !important;
+  border-left: 6px solid var(--color-gold) !important;
+  border: 1px solid rgba(239, 191, 84, 0.3);
+  box-shadow: 0 10px 25px rgba(239, 191, 84, 0.15);
+  padding: 2rem !important;
+  margin-bottom: 2.5rem;
+  margin-top: 1.5rem;
+}
+
+/* LEFT SIDE: INFO */
+.serviceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.serviceHeadline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.serviceName {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  color: var(--color-dark);
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.badgeFeatured {
+  background-color: #111;
+  color: var(--color-gold);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+.serviceDesc {
+  font-size: 0.95rem; /* Biraz daha büyütüldü */
+  color: #4a4a4a; /* Daha koyu gri yapıldı (okunabilirlik) */
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Sadece 1 satır */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.serviceMeta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 0.4rem;
+}
+
+.metaTag, .metaTagPrice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  background-color: rgba(0,0,0,0.04);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.metaTagPrice {
+  background-color: rgba(239, 191, 84, 0.1);
+  color: #926b15;
+}
+
+/* RIGHT SIDE: ACTION */
+.serviceAction {
+  flex-shrink: 0;
 }
 
 .buttonSelect {
-  background-color: var(--color-gold);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b352d;
+  color: var(--color-light);
+  padding: 0.9rem 2.5rem;
+  font-family: var(--font-primary);
   font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all 0.3s ease;
   white-space: nowrap;
 }
 
 .buttonSelect:hover {
-  background-color: #b99324;
+  background-color: #24201b;
 }
+
+.buttonSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f3ef; /* Light beige base */
+  color: var(--color-dark);
+  padding: 0.9rem 2.5rem;
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 0, 0, 0.06); /* Very subtle border to define edge */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.buttonSecondary:hover {
+  background-color: #ede7df; /* Slightly darker beige */
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
 
 /* List Items (Danışman / Zaman) */
 .listItem {
@@ -389,42 +512,7 @@
 }
 
 /* Butonlar */
-.buttonSelect {
-  background-color: var(--color-light-alt);
-  color: var(--color-dark);
-  border: 1px solid rgba(0,0,0,0.1);
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.buttonSelect:hover {
-  background-color: var(--color-gold);
-  color: var(--color-light);
-  border-color: var(--color-gold);
-}
-
-.buttonPrimary {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  border: none;
-  padding: 1.2rem;
-  width: 100%;
-  border-radius: 4px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  margin-top: 1.5rem;
-}
-
-.buttonPrimary:hover {
-  background-color: var(--color-gold);
-}
+/* The single unified .buttonSelect is defined above */
 
 .buttonBack {
   background: none;
