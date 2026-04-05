@@ -138,6 +138,25 @@ export default function RezervasyonPage() {
     handleNextStep();
   };
 
+  const renderPrice = (price: any) => {
+    if (!price) return "";
+    const str = String(price).trim();
+    
+    // ₺ işaretini veya boşlukları temizleyip sadece rakam mı diye bakalım
+    const cleanStr = str.replace(/[₺\s]/g, "");
+    if (/^\d+$/.test(cleanStr)) {
+        // Tamamen rakamsa, sayı olarak formatlayalım
+        const num = parseInt(cleanStr, 10);
+        return new Intl.NumberFormat('tr-TR', {
+            style: 'currency',
+            currency: 'TRY',
+            maximumFractionDigits: 0
+        }).format(num);
+    }
+    
+    return str; // Kişiye Özel Fiyatlandırma gibi düz metinse aynen döndür
+  };
+
   const selectTime = (time: string, dateStr: string) => {
     setSelectedDate(dateStr);
     setSelectedTime(time);

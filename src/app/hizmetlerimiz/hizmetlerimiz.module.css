@@ -348,24 +348,76 @@
 @media (max-width: 992px) {
   .layoutGrid {
     flex-direction: column;
-    gap: 4rem;
+    gap: 2rem;
   }
   .sidebar {
     flex: none;
-    width: 100%;
+    width: calc(100% + 3rem);
+    position: sticky;
+    top: 85px; /* Header altında kalması için offset */
+    z-index: 50;
+    background-color: var(--color-light-alt);
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
   }
   .stickyMenu {
-    position: static;
+    position: relative;
+  }
+  .menuTitle {
+    display: none; /* Mobilde gizle, alan kalsın */
   }
   .menuList {
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1rem 2rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.8rem;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none; /* Firefox */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .menuList::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  .menuLink {
+    width: auto;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    border-radius: 40px; /* Hap (pill) stili */
+    padding: 0.6rem 1.4rem;
+    background-color: white;
+    margin: 0;
+    box-shadow: none !important;
+  }
+  .menuLink.active {
+    background-color: var(--color-dark);
+    color: var(--color-gold);
+    border-color: var(--color-dark) !important;
   }
   .serviceTitle {
     font-size: 2.2rem;
+    margin-top: 1rem;
   }
   .subServicesList {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .hookHeadline {
+    font-size: 1.8rem;
+  }
+  .subServiceRow {
+    padding: 2rem 1.5rem;
+  }
+  .highlightBadge {
+    left: 1rem;
+    top: -10px;
+    font-size: 0.65rem;
   }
 }
