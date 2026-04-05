@@ -46,55 +46,91 @@ export default function HizmetlerimizPage() {
     fetchData();
   }, []);
 
+  const loadMockData = () => {
+    const mockCats = [
+      { 
+        id: 'cilt-bakimlari', name: 'Cilt Bakımları', slug: 'cilt-bakimlari', 
+        marketing_title: 'Cilt Yenileme & Gençleştirme',
+        services_page_intro: 'Cildinizde yorgunluk, matlık veya elastikiyet kaybı mı var?', 
+        booking_description: 'Cildinizin ihtiyaç duyduğu tüm mineralleri ve vitaminleri hücre düzeyinde onararak...', 
+        short_description: null, cover_image_url: null, icon_name: '✨', sort_order: 0, is_active: true 
+      },
+      { 
+        id: 'vucut-bakimi', name: 'Vücut Bakımları', slug: 'vucut-bakimi', 
+        marketing_title: 'Sıkı & Pürüzsüz',
+        services_page_intro: 'Aynadaki silüetinizde daha pürüzsüz ve sıkı kıvrımlar görmek ister misiniz?', 
+        booking_description: 'Selülit protokolleri ve yoğun sıkılaştırıcı killerle bedeninizi baştan yaratıyoruz.', 
+        short_description: null, cover_image_url: null, icon_name: '🧘‍♀️', sort_order: 1, is_active: true 
+      }
+    ];
+    setCategories(mockCats);
+    setServices([
+      { id: '1', category_id: 'cilt-bakimlari', slug: '', name: 'Anti Aging Cilt Bakımı', duration_minutes: 60, short_description: 'Daha sıkı, canlı ve genç bir cilt görünümü sağlar', price_type: 'custom', price: null, is_active: true, is_featured: false, is_hero: false, sort_order: 0 },
+      { id: '2', category_id: 'cilt-bakimlari', slug: '', name: 'Medikal Cilt Analizi & Bakım', duration_minutes: 45, short_description: 'Bariyer onarımı sağlayan temel derinlemesine temizlik', price_type: 'fixed', price: '1500', is_active: true, is_featured: false, is_hero: false, sort_order: 1 },
+      { id: '3', category_id: 'cilt-bakimlari', slug: '', name: 'Signature Hydrafacial', duration_minutes: 75, short_description: 'Dünyaca ünlü sıvı dermabrazyon ile anında ışıltı', price_type: 'custom', price: null, is_active: true, is_featured: true, is_hero: true, sort_order: 2 },
+      { id: '4', category_id: 'vucut-bakimi', slug: '', name: 'G5 Sarkma & Selülit Protokolü', duration_minutes: 50, short_description: 'Dirençli yağ hücrelerinde mekanik parçalanma', price_type: 'custom', price: null, is_active: true, is_featured: true, is_hero: false, sort_order: 0 }
+    ]);
+    setActiveSectionId(mockCats[0].id);
+  };
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your_supabase')) {
-        // FALLBACK MOCK DATA IF DB IS ABSENT
-        setCategories([
-          { 
-            id: 'cilt-bakimlari', name: 'Cilt Bakımları', slug: 'cilt-bakimlari', 
-            marketing_title: 'Cilt Yenileme & Gençleştirme',
-            services_page_intro: 'Cildinizde yorgunluk, matlık veya elastikiyet kaybı mı var?', 
-            booking_description: 'Cildinizin ihtiyaç duyduğu tüm mineralleri ve vitaminleri hücre düzeyinde onararak...', 
-            short_description: null, cover_image_url: null, icon_name: '✨', sort_order: 0, is_active: true 
-          },
-          { 
-            id: 'vucut-bakimi', name: 'Vücut Bakımları', slug: 'vucut-bakimi', 
-            marketing_title: 'Sıkı & Pürüzsüz',
-            services_page_intro: 'Aynadaki silüetinizde daha pürüzsüz ve sıkı kıvrımlar görmek ister misiniz?', 
-            booking_description: 'Selülit protokolleri ve yoğun sıkılaştırıcı killerle bedeninizi baştan yaratıyoruz.', 
-            short_description: null, cover_image_url: null, icon_name: '🧘‍♀️', sort_order: 1, is_active: true 
-          }
-        ]);
-        setServices([
-          { id: '1', category_id: 'cilt-bakimlari', slug: '', name: 'Anti Aging Cilt Bakımı', duration_minutes: 60, short_description: 'Daha sıkı, canlı ve genç bir cilt görünümü sağlar', price_type: 'custom', price: null, is_active: true, is_featured: false, is_hero: false, sort_order: 0 },
-          { id: '2', category_id: 'cilt-bakimlari', slug: '', name: 'Medikal Cilt Analizi & Bakım', duration_minutes: 45, short_description: 'Bariyer onarımı sağlayan temel derinlemesine temizlik', price_type: 'fixed', price: '1500', is_active: true, is_featured: false, is_hero: false, sort_order: 1 },
-          { id: '3', category_id: 'cilt-bakimlari', slug: '', name: 'Signature Hydrafacial', duration_minutes: 75, short_description: 'Dünyaca ünlü sıvı dermabrazyon ile anında ışıltı', price_type: 'custom', price: null, is_active: true, is_featured: true, is_hero: true, sort_order: 2 },
-          { id: '4', category_id: 'vucut-bakimi', slug: '', name: 'G5 Sarkma & Selülit Protokolü', duration_minutes: 50, short_description: 'Dirençli yağ hücrelerinde mekanik parçalanma', price_type: 'custom', price: null, is_active: true, is_featured: true, is_hero: false, sort_order: 0 }
-        ]);
-        setActiveSectionId('cilt-bakimlari');
-      } else {
+        loadMockData();
+        return;
+      }
+      
+      const fetchPromise = (async () => {
         const { data: cats, error: catError } = await supabase.from('service_categories').select('*').eq('is_active', true).order('sort_order', { ascending: true });
         if (catError) throw catError;
         
         const { data: srvs, error: srvError } = await supabase.from('services').select('*').eq('is_active', true).order('sort_order', { ascending: true });
         if (srvError) throw srvError;
+        
+        return { cats, srvs };
+      })();
 
-        const activeCats = cats.filter(c => {
-            const hasServices = srvs.some(s => s.category_id === c.id);
-            return hasServices;
-        });
+      // 5 Saniyelik Zaman Aşımı Koruması (veritabanı ulaşılamazsa sonsuz askıda kalmasını önler)
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT')), 5000));
+      
+      const { cats, srvs }: any = await Promise.race([fetchPromise, timeoutPromise]);
 
-        setCategories(activeCats || []);
-        setServices(srvs || []);
-
-        if (activeCats && activeCats.length > 0) {
-            setActiveSectionId(activeCats[0].id);
-        }
+      if (!cats || cats.length === 0) {
+        loadMockData();
+        return;
       }
+
+      const activeCats = cats.filter((c: any) => {
+          const hasServices = srvs.some((s: any) => s.category_id === c.id);
+          return hasServices;
+      });
+
+      if (activeCats.length === 0) {
+        loadMockData();
+        return;
+      }
+
+      setCategories(activeCats);
+      setServices(srvs || []);
+
+      let urlKat = null;
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        urlKat = params.get('kat');
+      }
+      
+      let initialCatId = activeCats[0].id;
+
+      if (urlKat) {
+        const foundCat = activeCats.find((c: any) => c.slug === urlKat || c.id === urlKat);
+        if (foundCat) initialCatId = foundCat.id;
+      }
+      setActiveSectionId(initialCatId);
+      
     } catch (e: any) {
-      console.error(e);
+      console.error("Veri çekme hatası veya zaman aşımı:", e);
+      loadMockData(); // Yüklenme askıda kalmasın diye fallback datayı hemen bas
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +157,10 @@ export default function HizmetlerimizPage() {
                       <li key={cat.id}>
                         <button 
                           className={`${styles.menuLink} ${activeSectionId === cat.id ? styles.active : ""}`}
-                          onClick={() => setActiveSectionId(cat.id)}
+                          onClick={() => {
+                              setActiveSectionId(cat.id);
+                              setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }), 50);
+                          }}
                         >
                           {cat.name}
                         </button>

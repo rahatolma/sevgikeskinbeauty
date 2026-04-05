@@ -25,6 +25,7 @@ type Specialist = {
     is_active: boolean;
     sort_order: number;
     services?: Service[]; 
+    active_appointments_count?: number;
 };
 
 export default function SpecialistManager() {
@@ -43,6 +44,7 @@ export default function SpecialistManager() {
     // Array of checked service IDs
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -56,17 +58,19 @@ export default function SpecialistManager() {
             const { data: specSrv, error: errSpecSrv } = await supabase.from('specialist_services').select('specialist_id, service_id');
             const { data: srvs, error: errSrv } = await supabase.from('services').select('id, name, category_id');
             const { data: cats, error: errCat } = await supabase.from('service_categories').select('id, name');
+            const { data: appointments } = await supabase.from('booking_requests').select('specialist_id').in('status', ['pending', 'confirmed']);
 
             if(errSpec) throw errSpec;
 
             setAllServices(srvs || []);
             setAllCategories(cats || []);
 
-            // Hydrate specialists with their services
+            // Hydrate specialists with their services and pending appointments
             const hydrated = (specs || []).map(s => {
                 const assignedSrvIds = (specSrv || []).filter(ss => ss.specialist_id === s.id).map(ss => ss.service_id);
                 const srvObjs = (srvs || []).filter(srv => assignedSrvIds.includes(srv.id));
-                return { ...s, services: srvObjs };
+                const aptCount = (appointments || []).filter(a => a.specialist_id === s.id).length;
+                return { ...s, services: srvObjs, active_appointments_count: aptCount };
             });
 
             setSpecialists(hydrated);
@@ -78,7 +82,7 @@ export default function SpecialistManager() {
     };
 
     const openCreateDrawer = () => {
-        setFormData({ is_active: true, sort_order: 0 });
+        setFormData({ is_active: true, sort_order: 0, avatar_url: null });
         setSelectedServices([]);
         setIsDrawerOpen(true);
     };
@@ -115,6 +119,29 @@ export default function SpecialistManager() {
         }
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setUploadingImage(true);
+            const file = e.target.files?.[0];
+            if (!file) return;
+            
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+            
+            const { error: uploadError } = await supabase.storage.from('specialists').upload(filePath, file);
+            if (uploadError) throw uploadError;
+            
+            const { data } = supabase.storage.from('specialists').getPublicUrl(filePath);
+            setFormData(prev => ({ ...prev, avatar_url: data.publicUrl }));
+        } catch (error) {
+            console.error("Görsel yüklenemedi:", error);
+            alert("Görsel yüklenirken bir hata oluştu. Storage bucket 'specialists' mevcut mu?");
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
     const saveSpecialist = async () => {
         if (!formData.full_name) {
             alert("Lütfen uzman adını girin!");
@@ -131,6 +158,7 @@ export default function SpecialistManager() {
                     full_name: formData.full_name,
                     role_title: formData.role_title,
                     bio: formData.bio,
+                    avatar_url: formData.avatar_url,
                     is_active: formData.is_active,
                     sort_order: formData.sort_order
                 }).eq('id', specialistId);
@@ -140,6 +168,7 @@ export default function SpecialistManager() {
                     full_name: formData.full_name,
                     role_title: formData.role_title,
                     bio: formData.bio,
+                    avatar_url: formData.avatar_url,
                     is_active: formData.is_active,
                     sort_order: formData.sort_order || 0
                 }]).select();
@@ -207,9 +236,15 @@ export default function SpecialistManager() {
                             
                             <div className={styles.cardTop}>
                                 <div className={styles.profileSection}>
-                                    <div className={styles.avatar}>
-                                        <User size={24} />
-                                    </div>
+                                    {s.avatar_url ? (
+                                        <div className={styles.avatar} style={{padding: 0, overflow: 'hidden'}}>
+                                            <img src={s.avatar_url} alt="Avatar" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                                        </div>
+                                    ) : (
+                                        <div className={styles.avatar}>
+                                            <User size={24} />
+                                        </div>
+                                    )}
                                     <div className={styles.profileInfo}>
                                         <div className={styles.profileName}>{s.full_name}</div>
                                         <div className={styles.profileTitle}>{s.role_title || '-'}</div>
@@ -223,7 +258,16 @@ export default function SpecialistManager() {
                             </div>
 
                             <div className={styles.cardMiddle}>
-                                <div className={styles.serviceCount}>{s.services?.length || 0} Hizmet Atandı</div>
+                                <div style={{ background: '#f9fafb', borderRadius: '8px', padding: '1rem', width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', border: '1px solid #f3f4f6' }}>
+                                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                      <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#d97706' }}>{s.active_appointments_count || 0}</span>
+                                      <span style={{ fontSize: '0.7rem', color: '#6b7280', textTransform: 'uppercase' }}>Bekleyen İş</span>
+                                   </div>
+                                </div>
+
+                                <div className={styles.serviceCount} style={{display:'flex', justifyContent:'space-between', fontSize:'0.85rem', width: '100%', marginBottom: '0.5rem'}}>
+                                    <span style={{color:'#6b7280', fontWeight: 500}}>Yetkinlik Alanları (<strong style={{color:'#111827'}}>{s.services?.length || 0}</strong>)</span>
+                                </div>
                                 <div className={styles.tagsContainer}>
                                     {(s.services || []).slice(0, 3).map(srv => (
                                         <span key={srv.id} className={styles.tag}>{srv.name}</span>
@@ -248,8 +292,8 @@ export default function SpecialistManager() {
 
             {/* DRAWER FORM */}
             {isDrawerOpen && (
-                <div className={styles.drawerOverlay} onClick={(e) => { if(e.target === e.currentTarget) setIsDrawerOpen(false); }}>
-                    <div className={styles.drawer}>
+                <div className={styles.drawerOverlay} onMouseDown={(e) => { if(e.target === e.currentTarget) setIsDrawerOpen(false); }}>
+                    <div className={styles.drawer} onMouseDown={e => e.stopPropagation()}>
                         <div className={styles.drawerHeader}>
                             <h2 className={styles.drawerTitle}>{formData.id ? 'Uzmanı Düzenle' : 'Yeni Uzman'}</h2>
                             <button className={styles.closeBtn} onClick={() => setIsDrawerOpen(false)}><X size={24} /></button>
@@ -257,6 +301,20 @@ export default function SpecialistManager() {
                         
                         <div className={styles.drawerContent}>
                             {/* Bölüm 1: Temel Bilgiler */}
+                            <div className={styles.formGroup}>
+                                <label className={styles.formLabel}>Profil Görseli</label>
+                                <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                                    {formData.avatar_url ? (
+                                        <img src={formData.avatar_url} alt="Avatar" style={{width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover'}} />
+                                    ) : (
+                                        <div style={{width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                            <User size={24} color="#9ca3af" />
+                                        </div>
+                                    )}
+                                    <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
+                                    {uploadingImage && <span style={{fontSize: '0.8rem', color: '#d4af37', fontWeight: 600}}>Yükleniyor...</span>}
+                                </div>
+                            </div>
                             <div className={styles.formGroup}>
                                 <label className={styles.formLabel}>Ad Soyad</label>
                                 <input type="text" className={styles.formInput} value={formData.full_name || ''} onChange={e => setFormData({...formData, full_name: e.target.value})} placeholder="Örn: Kardelen Yılmaz" />

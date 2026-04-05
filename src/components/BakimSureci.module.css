@@ -96,10 +96,7 @@
 }
 
 .ctaLabel {
-  font-family: var(--font-primary);
-  font-size: 1.25rem;
-  color: var(--color-gray);
-  font-weight: 300;
+  display: none;
 }
 
 .ctaBtn {
@@ -141,4 +138,16 @@
   .title {
     font-size: 2.2rem;
   }
+}
+
+.ctaBtnFilled {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  border: 1px solid var(--color-dark);
+}
+
+.ctaBtnFilled:hover {
+  background-color: #111827;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
 }

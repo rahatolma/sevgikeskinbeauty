@@ -334,10 +334,11 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease, margin-top 0.4s ease;
+  width: 100%;
 }
 
 .serviceCard:hover .btnContainer {
-  max-height: 70px; /* İhtiyaca göre 70px'e kadar esner */
+  max-height: 90px; /* Daha fazla alan veriyoruz taşmaması için */
   margin-top: 1rem;
 }
 
@@ -358,11 +359,17 @@
   border-color: var(--color-light);
   color: #24201b; /* Çok koyu asil kahve/siyah metin */
   font-weight: 700;
-  font-size: 1rem; /* %20 daha büyük! */
-  padding: 1.1rem 3rem; /* Diğerlerinden çok daha şişkin konforlu alan */
-  letter-spacing: 3px;
+  font-size: 0.85rem; 
+  padding: 0.8rem 1rem; /* Padding daha da daraltıldı */
+  letter-spacing: 1px; /* Boşluk azaltıldı */
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15); /* Orijinal hafif beyaz ışık */
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  white-space: normal; /* Metin gerekiyorsa alt satıra insin */
+  text-align: center;
+  width: 100%; /* Kapsayıcıya tam otursun */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .serviceCard:hover .serviceBtnCream {

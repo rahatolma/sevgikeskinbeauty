@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HideOnAdmin from "@/components/HideOnAdmin";
+import ScrollRestoration from "@/components/ScrollRestoration";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -33,6 +34,7 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${jost.variable} ${cormorant.variable}`}>
       <body>
+        <ScrollRestoration />
         <HideOnAdmin><Header /></HideOnAdmin>
         {children}
         <HideOnAdmin><Footer /></HideOnAdmin>

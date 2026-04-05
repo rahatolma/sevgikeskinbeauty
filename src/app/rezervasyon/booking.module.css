@@ -81,30 +81,58 @@
   color: var(--color-gray);
 }
 
-/* Stepper (İlerleme Çubuğu) */
+/* Stepper (İlerleme Çubuğu) YENİ SEKME TASARIMI */
 .stepper {
-  display: flex;
-  margin-bottom: 2rem;
-  font-size: 18px; /* 18px net boyut */
-  font-family: var(--font-sans); /* Servis başlığı fontu */
-  color: var(--color-gray);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  padding-bottom: 1rem;
+  display: inline-flex;
+  gap: 0;
+  margin-bottom: 2.5rem;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 8px; /* Köşeli tasarım */
+  border: 1px solid rgba(212, 175, 55, 0.4); /* Bizim altın renk (gold) */
+  overflow: hidden; /* Dış köşeleri sarmala */
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.stepper::-webkit-scrollbar {
+  display: none;
 }
 
 .step {
-  margin-right: 2rem;
-  font-weight: 700; /* Servis başlığı boldluğu */
+  padding: 1rem 1.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-dark); /* Markamızın koyu rengi */
+  background-color: white;
   cursor: pointer;
-  transition: color 0.2s ease;
+  border-radius: 0; /* İç butonlar küt/köşeli */
+  border-right: 1px solid rgba(212, 175, 55, 0.3); /* Sekme araları altın çizgisi */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step:last-child {
+  border-right: none;
 }
 
 .step:hover {
-  color: var(--color-dark);
+  background-color: #fdfbf9;
+  color: var(--color-gold);
 }
 
 .stepActive {
-  color: var(--color-gold);
+  color: var(--color-dark);
+}
+
+.stepCurrent {
+  color: white;
+  background-color: var(--color-gold); /* Aktif olan sekme sapsarı! */
 }
 
 /* Step 1: Admin Tarzı Grid */
@@ -629,3 +657,6 @@
     width: 100%;
   }
 }
+
+/* Cache Buster: Sun Apr  5 16:44:50 +03 2026 */
+.cacheBuster { display: none; }

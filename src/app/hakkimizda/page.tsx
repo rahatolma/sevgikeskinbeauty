@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./hakkimizda.module.css";
 import HeroSlider from "@/components/HeroSlider";
+import { supabase } from "@/lib/supabase";
 
 export const metadata = {
   title: "Hakkımızda | Sevgi Keskin Beauty",
@@ -14,18 +15,26 @@ const SvgCheck = () => (
   </svg>
 );
 
-export default function HakkimizdaPage() {
+export default async function HakkimizdaPage() {
+
+  const { data: specialists } = await supabase
+    .from('specialists')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+
   return (
     <main className={styles.pageWrapper}>
       {/* 1. HERO SECTION (ANA SAYFA YAPISI) */}
       <HeroSlider 
-        title={<>Cildiniz için doğru olanı <br/>birlikte belirliyoruz</>}
-        subtitle={<>Her bakım aynı değildir.<br/>Cildinizin ihtiyacına özel analiz ve uygulama ile gerçek sonuçlar sunuyoruz.</>}
-        imageSrc="/images/slider/hakkimizda_01.png"
+        title={<>Standart bakım değil, <br/>size özel çözüm sunuyoruz.</>}
+        subtitle={<>Her cilt farklıdır. Bu yüzden her uygulama öncesi analiz yapar, cildinize gerçekten ihtiyaç duyduğu bakımı planlarız.</>}
+        imageSrc="/images/slider/hakkimizda_02.png"
         ctaLink="/rezervasyon"
         ctaText="RANDEVU AL"
         ctaNote=""
         alignment="fullbleed-left-heavy"
+        showSecondaryBtn={false}
       />
 
       {/* 2. MARKA HİKAYESİ (DERGİ YAPISI) - ZIG-ZAG 1 (Sol İmaj) */}
@@ -80,7 +89,7 @@ export default function HakkimizdaPage() {
             </div>
             <div className={styles.founderImageWrapper}>
                <Image 
-                 src="/images/slider/kurucu.png" 
+                 src="/images/slider/sevgikeskin.png" 
                  alt="Sevgi Keskin" 
                  fill
                  className={styles.founderImage}
@@ -114,57 +123,26 @@ export default function HakkimizdaPage() {
          <div className="container">
             <div className={styles.teamGrid}>
                
-               <div className={styles.teamCard}>
-                  <div className={styles.teamImageWrapper}>
-                     <Image src="/images/ai-teams/founder_portrait.png" alt="Sevgi Keskin" fill className={styles.teamImage} />
-                  </div>
-                  <div className={styles.teamCardInner}>
-                     <h4 className={styles.teamName}>Sevgi Keskin <br/><span>Uzman Estetisyen</span></h4>
-                     <p className={styles.teamBio}>
-                        Cilt yenileme, anti-aging ve leke tedavileri konusunda uzmanlaşmıştır.
-                     </p>
-                  </div>
-               </div>
-               
-               <div className={styles.teamCard}>
-                  <div className={styles.teamImageWrapper}>
-                     <Image src="/images/ai-teams/team_kardelen.png" alt="Kardelen" fill className={styles.teamImage} />
-                  </div>
-                  <div className={styles.teamCardInner}>
-                     <h4 className={styles.teamName}>Kardelen <br/><span>Güzellik Uzmanı</span></h4>
-                     <p className={styles.teamBio}>
-                        Cilt bakımı ve kişiye özel bakım protokollerinde deneyimlidir.
-                     </p>
-                  </div>
-               </div>
+               {specialists?.map((spec) => (
+                   <div key={spec.id} className={styles.teamCard}>
+                      <div className={styles.teamImageWrapper}>
+                         {spec.avatar_url ? (
+                             <Image src={spec.avatar_url} alt={spec.full_name} fill className={styles.teamImage} style={{objectFit: 'cover'}} />
+                         ) : (
+                             <div style={{width: '100%', height: '100%', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <span style={{color: '#9ca3af', fontSize: '3rem'}}>👤</span>
+                             </div>
+                         )}
+                      </div>
+                      <div className={styles.teamCardInner}>
+                         <h4 className={styles.teamName}>{spec.full_name} <br/><span>{spec.role_title || 'Uzman'}</span></h4>
+                         <p className={styles.teamBio}>
+                            {spec.bio || 'Hakkında bilgi bulunmuyor.'}
+                         </p>
+                      </div>
+                   </div>
+               ))}
 
-               <div className={styles.teamCard}>
-                  <div className={styles.teamImageWrapper}>
-                     <Image src="/images/ai-teams/team_berna.png" alt="Berna" fill className={styles.teamImage} />
-                  </div>
-                  <div className={styles.teamCardInner}>
-                     <h4 className={styles.teamName}>Berna <br/><span>Terapist</span></h4>
-                     <p className={styles.teamBio}>
-                        Masaj ve rahatlatıcı terapiler alanında profesyonel uygulamalar sunar.
-                     </p>
-                  </div>
-               </div>
-
-            </div>
-         </div>
-      </section>
-
-
-
-      {/* 7. FINAL CTA */}
-      <section className={styles.ctaSection}>
-         <div className="container">
-            <div className={styles.ctaContent}>
-               <h2 className={styles.ctaTitle}>Sizin için en doğru bakım planını birlikte oluşturalım</h2>
-               <p className={styles.ctaSubtitle}>İlk adımı atın, gerisini biz planlayalım.</p>
-               <Link href="/rezervasyon" className={styles.ctaBtn}>
-                  Randevu Al
-               </Link>
             </div>
          </div>
       </section>

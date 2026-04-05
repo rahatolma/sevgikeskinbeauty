@@ -2,7 +2,13 @@
   display: flex;
   min-height: 100vh;
   background-color: #f9fafb;
+  font-family: var(--font-jost), sans-serif;
 }
+
+.adminContainer * {
+  font-family: var(--font-jost), sans-serif;
+}
+
 
 .sidebar {
   width: 260px;

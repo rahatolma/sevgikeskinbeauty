@@ -7,53 +7,57 @@ import HeroSlider from "@/components/HeroSlider";
 import Testimonials from "@/components/Testimonials";
 import WhyUs from "@/components/WhyUs";
 import BakimSureci from "@/components/BakimSureci";
-import { useRef } from "react";
+import CiltAnaliziModal from "@/components/CiltAnaliziModal";
+import { useState, useRef } from "react";
 
 const services = [
   {
     title: "Cilt Yenileme & Gençleştirme",
     description: "Daha parlak, canlı ve genç görünen bir cilt",
     image: "/images/services/1-cilt-yenileme-v2.png", 
-    link: "/hizmetlerimiz",
+    link: "/hizmetlerimiz?kat=cilt-yenileme-genclestirme",
     objectPosition: "center top", // Kadının kafasının kesilmesini önlemek için focusu yukarı çektik
   },
   {
     title: "Leke & Ton Eşitleme",
     description: "Cilt tonunu eşitleyen ve lekeleri azaltan bakım",
     image: "/images/services/2-leke-ton.png",
-    link: "/hizmetlerimiz",
+    link: "/hizmetlerimiz?kat=leke-ton-esitleme",
   },
   {
     title: "Vücut Şekillendirme & Sıkılaşma",
     description: "Daha sıkı ve formda bir vücut görünümü",
     image: "/images/services/3-vucut-sikilasma.png",
-    link: "/hizmetlerimiz",
+    link: "/hizmetlerimiz?kat=vucut-sekillendirme-sikilasma",
   },
   {
     title: "Lazer Epilasyon",
     description: "Kalıcı pürüzsüzlük ve konfor",
     image: "/images/services/4-lazer-epilasyon.png",
-    link: "/hizmetlerimiz",
+    link: "/hizmetlerimiz?kat=lazer-epilasyon",
   },
   {
     title: "Masaj & Rahatlama Terapileri",
     description: "Stresi azaltan ve bedeni yenileyen terapiler",
     image: "/images/services/5-masaj-spa.png",
-    link: "/hizmetlerimiz",
+    link: "/hizmetlerimiz?kat=masaj-terapiler",
   },
   {
     title: "Size Özel Bakım Programı",
     description: "Cilt analizi ile sizin için en doğru bakım planını birlikte oluşturuyoruz",
     image: "/images/services/6-ozel-bakim.png", /* Özel kampanya/highlight kartı */
-    link: "/rezervasyon",
-    ctaText: "Randevu Al",
+    isModalTarget: true,
+    ctaText: "ÜCRETSİZ CİLT ANALİZİ AL",
     label: "KİŞİYE ÖZEL DANIŞMANLIK"
   }
 ];
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <main>
+      <CiltAnaliziModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       {/* Glowish Style Hero Slider */}
       <HeroSlider
         imageSrc="/images/slider/hero-home-yeni.png"
@@ -76,12 +80,7 @@ export default function Home() {
               const isLarge = index === 0 || index === 5;
               const isCampaign = index === 5;
 
-              return (
-                <Link 
-                  href={service.link} 
-                  key={index} 
-                  className={`${styles.serviceCard} ${isLarge ? styles.serviceCardLarge : ''} ${isCampaign ? styles.serviceCardCampaign : ''}`}
-                >
+              const cardBody = (
                   <div className={styles.serviceImageWrapper}>
                     <Image 
                       src={service.image} 
@@ -99,13 +98,35 @@ export default function Home() {
                         <p className={styles.serviceDesc}>{service.description}</p>
                         
                         <div className={styles.btnContainer}>
-                          <span className={`${styles.serviceBtn} ${isCampaign ? styles.serviceBtnCream : ''}`}>
+                          <span className={styles.serviceBtn}>
                             {service.ctaText || "Detayları Gör"}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
+              );
+
+              if (service.isModalTarget) {
+                 return (
+                    <div 
+                       key={index} 
+                       className={`${styles.serviceCard} ${isLarge ? styles.serviceCardLarge : ''} ${isCampaign ? styles.serviceCardCampaign : ''}`}
+                       onClick={() => setIsModalOpen(true)}
+                       style={{ cursor: 'pointer' }}
+                    >
+                       {cardBody}
+                    </div>
+                 );
+              }
+
+              return (
+                <Link 
+                  href={service.link || "#"} 
+                  key={index} 
+                  className={`${styles.serviceCard} ${isLarge ? styles.serviceCardLarge : ''} ${isCampaign ? styles.serviceCardCampaign : ''}`}
+                >
+                  {cardBody}
                 </Link>
               );
             })}

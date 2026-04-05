@@ -1,5 +1,8 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
 import styles from "./BakimSureci.module.css";
+import CiltAnaliziModal from "./CiltAnaliziModal";
 
 const IconSearch = () => (
   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -26,51 +29,62 @@ const IconCheck = () => (
 );
 
 export default function BakimSureci() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <section className={styles.processSection}>
-      <div className="container">
-        <div className={styles.header}>
-          <h2 className={styles.title}>Güzelliğinizi şansa bırakmayın</h2>
-          <p className={styles.subtitle}>Cildinizi analiz ediyor, ihtiyacınıza özel bakım planınızı birlikte oluşturuyoruz.</p>
-        </div>
+    <>
+      <section className={styles.processSection}>
+        <div className="container">
+          <div className={styles.header}>
+            <h2 className={styles.title}>Güzelliğinizi şansa bırakmayın</h2>
+            <p className={styles.subtitle}>Cildinizi analiz ediyor, ihtiyacınıza özel bakım planınızı birlikte oluşturuyoruz.</p>
+          </div>
 
-        <div className={styles.stepsContainer}>
-          <div className={styles.step}>
-            <div className={styles.iconBox}>
-              <IconSearch />
+          <div className={styles.stepsContainer}>
+            <div className={styles.step}>
+              <div className={styles.iconBox}>
+                <IconSearch />
+              </div>
+              <h3 className={styles.stepTitle}>1. Cilt Analizi</h3>
+              <p className={styles.stepDesc}>Cildiniz detaylı şekilde analiz edilir.</p>
             </div>
-            <h3 className={styles.stepTitle}>1. Cilt Analizi</h3>
-            <p className={styles.stepDesc}>Cildiniz detaylı şekilde analiz edilir.</p>
+
+            <div className={styles.connector}></div>
+
+            <div className={styles.step}>
+               <div className={styles.iconBox}>
+                 <IconFile />
+               </div>
+               <h3 className={styles.stepTitle}>2. Kişiye Özel Plan</h3>
+               <p className={styles.stepDesc}>Size özel bakım protokolü oluşturulur.</p>
+            </div>
+
+            <div className={styles.connector}></div>
+
+            <div className={styles.step}>
+               <div className={styles.iconBox}>
+                 <IconCheck />
+               </div>
+               <h3 className={styles.stepTitle}>3. Uygulama & Takip</h3>
+               <p className={styles.stepDesc}>Süreç boyunca gelişim takip edilir.</p>
+            </div>
           </div>
 
-          <div className={styles.connector}></div>
-
-          <div className={styles.step}>
-             <div className={styles.iconBox}>
-               <IconFile />
-             </div>
-             <h3 className={styles.stepTitle}>2. Kişiye Özel Plan</h3>
-             <p className={styles.stepDesc}>Size özel bakım protokolü oluşturulur.</p>
-          </div>
-
-          <div className={styles.connector}></div>
-
-          <div className={styles.step}>
-             <div className={styles.iconBox}>
-               <IconCheck />
-             </div>
-             <h3 className={styles.stepTitle}>3. Uygulama & Takip</h3>
-             <p className={styles.stepDesc}>Süreç boyunca gelişim takip edilir.</p>
+          <div className={styles.ctaBox}>
+            <button 
+                onClick={() => setIsModalOpen(true)} 
+                className={`${styles.ctaBtn} ${styles.ctaBtnFilled}`}
+            >
+              ÜCRETSİZ CİLT ANALİZİ AL
+            </button>
           </div>
         </div>
+      </section>
 
-        <div className={styles.ctaBox}>
-          <p className={styles.ctaLabel}>Ücretsiz cilt analizi ile başlayın</p>
-          <Link href="/rezervasyon" className={styles.ctaBtn}>
-            RANDEVU AL
-          </Link>
-        </div>
-      </div>
-    </section>
+      <CiltAnaliziModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </>
   );
 }

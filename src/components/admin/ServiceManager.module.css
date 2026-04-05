@@ -97,6 +97,7 @@
   margin-bottom: 0.5rem;
   transition: all 0.2s;
   cursor: pointer;
+  position: relative;
 }
 
 .listItemSelected {
@@ -108,6 +109,31 @@
   box-shadow: var(--shadow-md);
   border-color: #9ca3af;
   opacity: 0.9;
+}
+
+/* NEW Analytics Bar styles */
+.analyticsBar {
+  display: contents; /* Allows children to participate in .itemContent grid */
+}
+
+.analyticItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.analyticValue {
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-jost), sans-serif;
+  color: #111827;
+}
+
+.analyticLabel {
+  font-size: 0.7rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 5px;
 }
 
 .dragHandle {
@@ -129,6 +155,14 @@
   gap: 1rem;
 }
 
+.serviceItemContent {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(180px, 2.5fr) 1.5fr 1.5fr 1.5fr;
+  align-items: center;
+  gap: 1rem;
+}
+
 .itemIcon {
   font-size: 1.5rem;
 }
@@ -139,14 +173,30 @@
 }
 
 .itemText strong {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: #111827;
   font-weight: 500;
 }
 
-.itemText small {
+.badgeFeatureContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tagGroup {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tagLabel {
   font-size: 0.75rem;
   color: #6b7280;
+  display: inline-flex;
+  font-family: var(--font-jost), sans-serif;
 }
 
 .itemActions {

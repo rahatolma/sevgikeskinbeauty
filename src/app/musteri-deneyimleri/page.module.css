@@ -1,27 +1,27 @@
 .pageContainer {
   min-height: 100vh;
   background-color: #fcfcfc;
+  padding-top: 7rem; /* Sabit header boşluğu eklendi */
 }
 
-/* HERO SECTION */
-.heroSection {
-  padding: 12rem 0 6rem;
-  background-color: #24201b; /* Çok asil, dark bir karşılama */
-  color: var(--color-light);
-  text-align: center;
+/* HEADER AREA */
+.headerArea {
+  margin-bottom: 3rem;
+  text-align: left;
+  padding-top: 5rem; /* Sabit headerı kesin atlatır */
 }
 
-.title {
+.pageTitle {
   font-family: var(--font-serif);
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
 }
 
-.subtitle {
+.pageSubtitle {
   font-family: var(--font-primary);
-  font-size: 1.25rem;
-  font-weight: 300;
-  opacity: 0.8;
+  font-size: 1.1rem;
+  color: var(--color-gray);
 }
 
 /* CONTENT & FILTERS */
@@ -32,57 +32,67 @@
 .filterWrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: flex-start;
+  gap: 0.8rem;
   margin-bottom: 4rem;
 }
 
 .filterBtn {
   font-family: var(--font-primary);
   font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-gray);
-  background: transparent;
+  font-weight: 500;
+  color: var(--color-dark);
+  background: white;
   border: 1px solid rgba(0,0,0,0.1);
-  padding: 0.75rem 1.8rem;
-  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .filterBtn:hover {
-  border-color: var(--color-dark);
-  color: var(--color-dark);
+  border-color: var(--color-gold);
+  color: var(--color-gold);
 }
 
 .filterBtn.active {
-  background-color: var(--color-dark);
-  color: var(--color-light);
-  border-color: var(--color-dark);
+  background-color: var(--color-gold);
+  color: white;
+  border-color: var(--color-gold);
 }
 
-/* MASONRY GRID */
 .masonryGrid {
-  column-count: 3;
-  column-gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  padding-top: 1.5rem; /* prevent absolute badge clipping */
+  padding-bottom: 2rem;
 }
 
 .card {
-  break-inside: avoid;
-  margin-bottom: 2rem;
+  margin-bottom: 0; /* Artık grid gap yönetiyor */
   background: #fff;
   border-radius: 8px;
-  padding: 2.5rem 2rem;
+  padding: 3rem 2rem;
   border: 1px solid rgba(0,0,0,0.04);
   box-shadow: 0 4px 20px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  position: relative; /* For absolute badge */
+  overflow: visible !important; /* Asla kırpma yapmaz */
+}
+
+.highlightCard {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+  z-index: 5;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  border-color: rgba(212, 175, 55, 0.2); /* Hafif sarı border dokunuşu titremeyen efektif geribildirim verir */
 }
 
 .cardHeader {
@@ -95,6 +105,24 @@
 .stars {
   display: flex;
   gap: 0.15rem;
+}
+
+.highlightBadge {
+  position: absolute;
+  top: -14px;
+  left: 2rem;
+  z-index: 20;
+  white-space: nowrap;
+  background-color: var(--color-dark);
+  color: var(--color-gold);
+  font-family: var(--font-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .categoryBadge {
@@ -152,16 +180,20 @@
 /* RESPONSIVE */
 @media (max-width: 992px) {
   .masonryGrid {
-    column-count: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .heroSection {
-    padding: 10rem 1.5rem 4rem;
+  .masonryGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  .title {
-    font-size: 2.5rem;
+  .contentSection {
+    padding: 4rem 0 4rem;
+  }
+  .pageTitle {
+    font-size: 2.2rem;
   }
   .masonryGrid {
     column-count: 1;

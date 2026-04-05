@@ -1,0 +1,75 @@
+.ctaFinalSection {
+  padding: 6rem 0;
+  background-color: var(--color-dark, #1c1c1c); /* Siyah arka plan inanılmaz dikkat çeker */
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaWrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  color: var(--color-gold, #d4af37);
+  margin-bottom: 1.5rem;
+}
+
+.subtitle {
+  font-family: var(--font-primary);
+  font-size: 1.15rem;
+  color: var(--color-light, #fcfcfc);
+  margin-bottom: 3rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.actionGroup {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.btnPrimary {
+  display: inline-block;
+  background-color: var(--color-gold, #d4af37);
+  color: var(--color-dark, #1c1c1c);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 1.2rem 3.5rem;
+  border-radius: 4px;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.btnPrimary:hover {
+  background-color: #cbb28d;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+}
+
+.trustMicroCopy {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.2rem;
+  }
+}

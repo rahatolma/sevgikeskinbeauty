@@ -1,6 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import styles from "./Testimonials.module.css";
-import { reviews } from "@/data/reviews"; /* Merkezi datadan çekiyoruz */
+import { supabase } from "@/lib/supabase";
+
+type DBReview = {
+  id: string;
+  name: string;
+  text: string;
+  category: string;
+  rating: number;
+  is_highlight: boolean;
+  service_id: string | null;
+  services: {
+    name: string;
+    is_featured: boolean;
+    category_id: string;
+    service_categories: {
+      name: string;
+    } | null;
+  } | null;
+};
 
 const SvgStar = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="#F4B400" stroke="#F4B400" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -15,6 +36,34 @@ const SvgStarBig = () => (
 );
 
 export default function Testimonials() {
+
+  const [reviewsToDisplay, setReviewsToDisplay] = useState<DBReview[]>([]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+       const { data } = await supabase
+        .from('reviews')
+        .select(`
+          *,
+          services (
+            name,
+            is_featured,
+            category_id,
+            service_categories (
+              name
+            )
+          )
+        `)
+        .eq('is_active', true)
+        .eq('is_highlight', true)
+        .order('sort_order', { ascending: true });
+       if (data && data.length > 0) {
+          setReviewsToDisplay(data as DBReview[]);
+       }
+    }
+    fetchReviews();
+  }, []);
+
   return (
     <section className={styles.testimonialSection}>
       <div className="container">
@@ -25,16 +74,32 @@ export default function Testimonials() {
         </div>
 
         <div className={styles.grid}>
-          {reviews.slice(0, 6).map((review) => (
-            <div key={review.id} className={`${styles.card} ${review.isHighlight ? styles.highlightCard : ""}`}>
-              {review.isHighlight && <div className={styles.highlightBadge}>Öne Çıkan Deneyim</div>}
-              <div className={styles.stars}>
-                <SvgStar /><SvgStar /><SvgStar /><SvgStar /><SvgStar />
+          {reviewsToDisplay.map((review) => {
+            const isFeatured = review.services?.is_featured ?? false;
+            const categoryName = review.services?.name || review.services?.service_categories?.name || review.category || "Genel";
+            
+            return (
+              <div key={review.id} className={`${styles.card} ${isFeatured ? styles.highlightCard : ""}`}>
+                {isFeatured && (
+                  <div className={styles.highlightBadge}>
+                    ⭐ ÖNE ÇIKAN DENEYİM
+                  </div>
+                )}
+                <div className={styles.cardHeader}>
+                  <div className={styles.stars}>
+                    {Array.from({length: review.rating || 5}).map((_, i) => (
+                      <SvgStar key={i} />
+                    ))}
+                  </div>
+                  <span className={styles.categoryBadge}>{categoryName}</span>
+                </div>
+                <p className={styles.text}>{review.text}</p>
+                <div className={styles.authorArea}>
+                  <span className={styles.name}>{review.name}</span>
+                </div>
               </div>
-              <p className={styles.text}>{review.text}</p>
-              <span className={styles.name}>{review.name}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* TÜM YORUMLARA GİDİŞ LİNKİ */}

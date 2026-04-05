@@ -110,7 +110,7 @@
 
 .listHeader {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 40px 2fr 1.5fr 1.5fr 1.5fr 1fr 1fr 1fr;
   padding: 1rem 1.5rem;
   background-color: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
@@ -123,7 +123,7 @@
 
 .listRow {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 40px 2fr 1.5fr 1.5fr 1.5fr 1fr 1fr 1fr;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
   align-items: center;
@@ -207,6 +207,9 @@
 }
 
 .badgePending { background: #fef3c7; color: #92400e; }
+.badgePendingUrgent1 { background: #fef3c7; color: #d97706; } /* < 2h */
+.badgePendingUrgent2 { background: #ffedd5; color: #c2410c; } /* 2-6h */
+.badgePendingUrgent3 { background: #fee2e2; color: #b91c1c; font-weight: 700; box-shadow: 0 0 8px rgba(185, 28, 28, 0.2); } /* >6h */
 .badgeConfirmed { background: #dbeafe; color: #1e40af; }
 .badgeCompleted { background: #dcfce3; color: #166534; }
 .badgeCancelled { background: #fee2e2; color: #991b1b; }
@@ -411,3 +414,57 @@
 .btnConfirm { background: #1e40af; color: white; }
 .btnComplete { background: #166534; color: white; }
 .btnCancel { background: #fee2e2; color: #991b1b; }
+
+.checkboxCol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BULK ACTION BAR */
+.bulkActionBar {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-dark, #1c1c1c);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 100;
+  animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translate(-50%, 50px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.bulkBtn {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.bulkBtn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.bulkBtnApprove {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.bulkBtnApprove:hover {
+  background: rgba(16,185,129,0.1);
+}

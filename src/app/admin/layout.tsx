@@ -2,13 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Settings, ListTree, Calendar, Users, LogOut, Mailbox } from 'lucide-react';
+import { Settings, ListTree, Calendar, Users, LogOut, Mailbox, MessageCircle } from 'lucide-react';
 import styles from './admin.module.css';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   return (
     <div className={styles.adminContainer}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .admin-global-font-enforcer, .admin-global-font-enforcer * {
+           font-family: var(--font-jost), sans-serif !important;
+        }
+      `}} />
+      <div className="admin-global-font-enforcer" style={{ display: 'flex', width: '100%' }}>
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <h2>Sevgi Keskin</h2>
@@ -36,6 +42,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Mailbox size={20} />
             <span>İletişim & Aboneler</span>
           </Link>
+          <Link href="/admin/yorumlar" className={`${styles.navItem} ${pathname.startsWith('/admin/yorumlar') ? styles.active : ''}`}>
+            <MessageCircle size={20} />
+            <span>Müşteri Yorumları</span>
+          </Link>
         </nav>
 
         <div className={styles.sidebarFooter}>
@@ -49,6 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className={styles.mainContent}>
         {children}
       </main>
+      </div>
     </div>
   );
 }
