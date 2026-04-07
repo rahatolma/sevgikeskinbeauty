@@ -154,7 +154,7 @@ export default function AdminIndex() {
                     {isLoading ? 'Veriler hesaplanıyor...' : `${stats.pendingAppointments} randevu onay bekliyor`}
                   </span>
                </div>
-               <Link href="/admin/randevular" style={{ textDecoration: 'none' }}>
+               <Link href="/yonetim/randevular" style={{ textDecoration: 'none' }}>
                   <button disabled={isLoading} style={{ opacity: isLoading ? 0.5 : 1, background: stats.pendingAppointments > 0 ? 'white' : 'transparent', color: stats.pendingAppointments > 0 ? 'black' : '#6b7280', border: stats.pendingAppointments > 0 ? 'none' : '1px solid #6b7280', padding: '0.6rem 1.5rem', borderRadius: '6px', fontWeight: 600, fontSize: '0.9rem', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'all 0.2s' }}>
                     Onayla
                   </button>
@@ -169,7 +169,7 @@ export default function AdminIndex() {
                     {isLoading ? 'Veriler hesaplanıyor...' : `${stats.newMessagesCount} müşteri mesaj/dönüş bekliyor`}
                   </span>
                </div>
-               <Link href="/admin/iletisim" style={{ textDecoration: 'none' }}>
+               <Link href="/yonetim/iletisim" style={{ textDecoration: 'none' }}>
                   <button disabled={isLoading} style={{ opacity: isLoading ? 0.5 : 1, background: stats.newMessagesCount > 0 ? '#d4af37' : 'transparent', color: stats.newMessagesCount > 0 ? 'black' : '#6b7280', border: stats.newMessagesCount > 0 ? 'none' : '1px solid #6b7280', padding: '0.6rem 1.5rem', borderRadius: '6px', fontWeight: 600, fontSize: '0.9rem', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'all 0.2s' }}>
                     Yanıtla / Ara
                   </button>
@@ -184,7 +184,7 @@ export default function AdminIndex() {
                     {isLoading ? 'Veriler hesaplanıyor...' : `${stats.todayAppointments} randevu bugün gerçekleşecek`}
                   </span>
                </div>
-               <Link href="/admin/randevular" style={{ textDecoration: 'none' }}>
+               <Link href="/yonetim/randevular" style={{ textDecoration: 'none' }}>
                   <button style={{ background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '0.6rem 1.5rem', borderRadius: '6px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                     Detay
                   </button>
@@ -254,7 +254,7 @@ export default function AdminIndex() {
         <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', overflow: 'hidden' }}>
             <div style={{ padding: '1.25rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', margin: 0 }}>Son Eklenen Randevular</h2>
-                <Link href="/admin/randevular" style={{ fontSize: '0.85rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}>Tümünü Gör &rarr;</Link>
+                <Link href="/yonetim/randevular" style={{ fontSize: '0.85rem', color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}>Tümünü Gör &rarr;</Link>
             </div>
             
             <div style={{ padding: '0' }}>
@@ -299,7 +299,7 @@ export default function AdminIndex() {
                                     {b.status === 'cancelled' && <span style={{ padding: '0.3rem 0.6rem', background: '#fee2e2', color: '#991b1b', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>İPTAL</span>}
                                 </div>
                                 <div>
-                                    <Link href={`/admin/randevular?date=${b.requested_date === new Date().toISOString().split('T')[0] ? 'today' : 'all'}`} style={{ padding: '0.4rem 0.8rem', border: '1px solid #e5e7eb', borderRadius: '6px', background: 'white', color: '#374151', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600, display: 'inline-block', textDecoration: 'none' }}>
+                                    <Link href={`/yonetim/randevular?date=${b.requested_date === new Date().toISOString().split('T')[0] ? 'today' : 'all'}`} style={{ padding: '0.4rem 0.8rem', border: '1px solid #e5e7eb', borderRadius: '6px', background: 'white', color: '#374151', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600, display: 'inline-block', textDecoration: 'none' }}>
                                         Detay
                                     </Link>
                                 </div>
