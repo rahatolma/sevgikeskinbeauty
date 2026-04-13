@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import { X, Check, Clock, ShieldCheck, UserCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import styles from './CiltAnaliziModal.module.css';
 
@@ -12,6 +12,28 @@ type CiltAnaliziModalProps = {
 
 const skinTypes = ["Kuru", "Yağlı", "Karma", "Hassas", "Emin değilim"];
 const skinProblems = ["Leke & Ton Eşitsizliği", "Sivilce / Akne", "Kırışıklık / Sarkma", "Matlık / Cansız Görünüm", "Geniş Gözenek / Siyah Nokta", "Diğer"];
+
+// Mapping Logic
+const getRecommendations = (problem: string) => {
+  switch (problem) {
+    case "Leke & Ton Eşitsizliği": return ["Leke Karşıtı Cilt Bakımı", "Hydrafacial Cilt Yenileme"];
+    case "Sivilce / Akne": return ["Akne İzi & Cilt Doku Düzeltme", "Derinlemesine Cilt Temizliği"];
+    case "Kırışıklık / Sarkma": return ["Anti-Aging Cilt Bakımı", "Kolajen İp Germanlift Yüz Bakımı"];
+    case "Matlık / Cansız Görünüm": return ["Hydrafacial Cilt Yenileme", "Mikro Cilt Yenileme"];
+    case "Geniş Gözenek / Siyah Nokta": return ["Derinlemesine Cilt Temizliği", "Hydrafacial Cilt Yenileme"];
+    default: return ["Ücretsiz Uzman Cilt Analizi", "Size Özel Bakım Planı"];
+  }
+}
+
+const getSkinTypeNote = (type: string) => {
+  switch (type) {
+    case "Kuru": return "nemlendirme ve bariyer güçlendirme";
+    case "Yağlı": return "arındırma ve sebum dengeleme";
+    case "Hassas": return "nazik yaklaşım ve kişiye özel onarım";
+    case "Karma": return "kısmi arındırma ve dengeleme";
+    default: return "uzman analizi ile birebir doğru tespit";
+  }
+}
 
 export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalProps) {
   const [step, setStep] = useState(1);
@@ -50,51 +72,43 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
   }, [isOpen]);
 
   const handleNext = () => {
-    if (ciltTipi && problem) {
+    if (step === 1 && ciltTipi && problem) {
       setStep(2);
-      setTimeout(() => setAnimatingStep(2), 50); // slight delay to trigger transition
+      setTimeout(() => setAnimatingStep(2), 50);
+    } else if (step === 2) {
+      setStep(3);
+      setTimeout(() => setAnimatingStep(3), 50);
     }
   };
 
   const handleBack = () => {
-    setStep(1);
-    setTimeout(() => setAnimatingStep(1), 50);
+    if (step === 3) {
+      setStep(2);
+      setTimeout(() => setAnimatingStep(2), 50);
+    } else if (step === 2) {
+      setStep(1);
+      setTimeout(() => setAnimatingStep(1), 50);
+    }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Sadece rakamları al
     const raw = e.target.value.replace(/\D/g, '');
     let formatted = '';
-    
-    // TR format 10 hane (5 ile başlayan kısım)
-    // Eğer başa 0 koyduysa ya da 90 yazdıysa çıkartıp temizleyelim
     let cleaned = raw;
     if (cleaned.startsWith('90')) cleaned = cleaned.substring(2);
     if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
-    
-    // Max 10 digits
     cleaned = cleaned.substring(0, 10);
     
-    if (cleaned.length > 0) {
-      formatted += cleaned.substring(0, 3); // 5XX
-    }
-    if (cleaned.length > 3) {
-      formatted += ' ' + cleaned.substring(3, 6); // XXX
-    }
-    if (cleaned.length > 6) {
-      formatted += ' ' + cleaned.substring(6, 8); // XX
-    }
-    if (cleaned.length > 8) {
-      formatted += ' ' + cleaned.substring(8, 10); // XX
-    }
+    if (cleaned.length > 0) formatted += cleaned.substring(0, 3);
+    if (cleaned.length > 3) formatted += ' ' + cleaned.substring(3, 6);
+    if (cleaned.length > 6) formatted += ' ' + cleaned.substring(6, 8);
+    if (cleaned.length > 8) formatted += ' ' + cleaned.substring(8, 10);
     
     setPhone(formatted);
   };
 
   const handleSubmit = async () => {
-    if (!name || phone.replace(/\s/g, '').length < 10) {
-      return;
-    }
+    if (!name || phone.replace(/\s/g, '').length < 10) return;
 
     setIsSubmitting(true);
     try {
@@ -118,6 +132,9 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
     }
   };
 
+  const suggestions = getRecommendations(problem);
+  const skinTypeNote = getSkinTypeNote(ciltTipi);
+
   return (
     <div className={`${styles.overlay} ${isOpen ? styles.overlayOpen : ''}`} onClick={onClose}>
       <div 
@@ -128,8 +145,10 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
         <div className={styles.header}>
           {!isSuccess && (
             <div className={styles.headerTitle}>
-              Cildiniz İçin En Doğru Bakımı Belirleyelim
-              <span className={styles.headerSub}>Ücretsiz analiz ile başlayın</span>
+              {step === 3 ? "Size özel bakım planınızı birlikte oluşturalım" : "Cildiniz İçin En Doğru Bakımı Belirleyelim"}
+              <span className={styles.headerSub}>
+                {step === 3 ? "" : "Ücretsiz analiz ile başlayın"}
+              </span>
             </div>
           )}
           {isSuccess && <div></div>}
@@ -145,13 +164,16 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
             <div className={styles.successIcon}>
               <Check size={40} />
             </div>
-            <h2 className={styles.successTitle}>Talebiniz Alındı!</h2>
+            <h2 className={styles.successTitle}>Harika! İlk adımı tamamladınız</h2>
             <p className={styles.successDesc}>
-              Cilt analiz talebiniz uzmanlarımıza ulaştı. Sizinle en kısa sürede iletişime geçip, detaylı bir analiz ve sana özel bakım planı için randevumuzu planlayacağız.
+              Cilt analiz talebiniz uzmanlarımıza ulaştı. Sizi en kısa sürede arayarak size özel bakım planınızı birlikte oluşturacağız.
             </p>
+            <div style={{ marginBottom: '2rem', padding: '0.8rem 1.2rem', backgroundColor: '#ecfdf5', borderRadius: '8px', color: '#059669', fontSize: '0.95rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Clock size={16} /> Ortalama dönüş süresi: 15-30 dakika
+            </div>
             <button 
               className={styles.btnPrimary} 
-              style={{ width: '100%', padding: '1.2rem', flex: 'none', marginTop: '1rem' }}
+              style={{ width: '100%', padding: '1.2rem', flex: 'none' }}
               onClick={onClose}
             >
               Kapat
@@ -168,8 +190,12 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
                   <span className={styles.stepLabel}>1. Analiz</span>
                   <div className={styles.stepDot}></div>
                 </div>
-                <div className={`${styles.stepItem} ${step === 2 ? styles.stepActive : ''}`}>
-                  <span className={styles.stepLabel}>2. Bilgiler</span>
+                <div className={`${styles.stepItem} ${step === 2 ? styles.stepActive : (step > 2 ? styles.stepDone : '')}`}>
+                  <span className={styles.stepLabel}>2. Sonuç</span>
+                  <div className={styles.stepDot}></div>
+                </div>
+                <div className={`${styles.stepItem} ${step === 3 ? styles.stepActive : ''}`}>
+                  <span className={styles.stepLabel}>3. Bilgiler</span>
                   <div className={styles.stepDot}></div>
                 </div>
               </div>
@@ -178,8 +204,16 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
               <div className={styles.stepsWrapper}>
                 
                 {/* STEP 1: ANALYSIS */}
-                <div className={`${styles.stepBox} ${animatingStep === 1 ? styles.stepVisible : (step === 2 ? styles.stepSlideLeft : styles.stepSlideRight)}`}>
-                  <p className={styles.subtitleNote}>Sizin için en doğru bakımı belirleyebilmemiz için birkaç kısa soru:</p>
+                <div className={`${styles.stepBox} ${animatingStep === 1 ? styles.stepVisible : (step > 1 ? styles.stepSlideLeft : styles.stepSlideRight)}`}>
+                  <div className={styles.psychologicalTrigger}>
+                    <p className={styles.triggerText}>Cildinizin gerçekten neye ihtiyacı olduğunu öğrenin</p>
+                    <p style={{fontFamily: 'var(--font-primary)', fontSize: '0.9rem', color: '#6b7280', margin: '0 0 1rem 0'}}>Sadece 30 saniye sürer</p>
+                    <div className={styles.triggerBadges}>
+                      <span className={styles.badge}><Clock size={14}/> 30 saniye</span>
+                      <span className={styles.badge}><ShieldCheck size={14}/> Ücretsiz</span>
+                      <span className={styles.badge}><UserCheck size={14}/> Uzman analizi</span>
+                    </div>
+                  </div>
                   
                   <div className={styles.formGroup}>
                     <label className={styles.label}>Cilt tipiniz nedir?</label>
@@ -210,11 +244,58 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
                       ))}
                     </div>
                   </div>
+                  
+                  <div className={styles.previewNoteBox}>
+                    <p className={styles.previewNoteText}>
+                      Sonuçta size özel bakım planı ve önerilen hizmetleri anında göreceksiniz.
+                    </p>
+                  </div>
                 </div>
 
-                {/* STEP 2: CONTACT INFO */}
-                <div className={`${styles.stepBox} ${animatingStep === 2 ? styles.stepVisible : styles.stepSlideRight}`}>
-                  <p className={styles.subtitleNote}>Uzmanımız size özel analiz ve bakım planı için sizinle iletişime geçecek.</p>
+                {/* STEP 2: RESULTS (GAME CHANGER) */}
+                <div className={`${styles.stepBox} ${animatingStep === 2 ? styles.stepVisible : (step > 2 ? styles.stepSlideLeft : styles.stepSlideRight)}`}>
+                  <div className={styles.resultHeader}>
+                    <h3 className={styles.resultTitle}>Sizin için en uygun bakım önerisi hazır</h3>
+                  </div>
+
+                  <div className={styles.resultSummaryBox}>
+                    <div className={styles.resultSummaryItem}>
+                      <span className={styles.summaryLabel}>Cilt Tipiniz:</span>
+                      <span className={styles.summaryValue}>{ciltTipi || "-"}</span>
+                    </div>
+                    <div className={styles.resultSummaryItem}>
+                      <span className={styles.summaryLabel}>Ana Probleminiz:</span>
+                      <span className={styles.summaryValue}>{problem || "-"}</span>
+                    </div>
+                    <p className={styles.resultExplanation}>
+                      Cildinizin ihtiyaçlarını analiz ettiğimizde, <strong>{skinTypeNote}</strong> odaklı bir bakımın sizin için daha uygun olduğunu görüyoruz.
+                    </p>
+                  </div>
+
+                  <div className={styles.suggestionsContainer}>
+                    <div style={{marginBottom: '1.2rem'}}>
+                      <p className={styles.suggestionsTitle} style={{marginBottom: '0.2rem'}}>Önerilen Uygun Bakımlar:</p>
+                      <p style={{fontFamily: 'var(--font-primary)', fontSize: '0.85rem', color: '#6b7280', margin: 0}}>Bu bakımlar sizin için en uygun başlangıç noktasıdır</p>
+                    </div>
+                    <div className={styles.suggestionList}>
+                      {suggestions.map((suggestion, idx) => (
+                        <div key={idx} className={styles.suggestionCard}>
+                          <div className={styles.suggestionIconWrapper}>
+                            <Check size={18} strokeWidth={3} />
+                          </div>
+                          <span>{suggestion}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className={styles.suggestionFootnote}>
+                      Uzmanımız bu ön değerlendirmeyi görüşme sırasında cildinize göre netleştirecektir.
+                    </p>
+                  </div>
+                </div>
+
+                {/* STEP 3: CONTACT INFO */}
+                <div className={`${styles.stepBox} ${animatingStep === 3 ? styles.stepVisible : styles.stepSlideRight}`}>
+                  <p className={styles.subtitleNote}>Uzmanımız analiz sonuçlarınıza göre sizi arayarak en doğru bakım planını sizinle birlikte belirleyecek.</p>
                   
                   <div className={styles.formGroup}>
                     <label className={styles.label}>İsim Soyisim</label>
@@ -257,43 +338,54 @@ export default function CiltAnaliziModal({ isOpen, onClose }: CiltAnaliziModalPr
 
             {/* Fixed Footer */}
             <div className={styles.footer}>
-              {/* TRUST LINE MOVED ABOVE THE CTA */}
-              {step === 2 && (
+              {/* TRUST LINE MOVED TO STEP 3 AND STEP 2 */}
+              {step === 3 && (
                 <div className={styles.trustBox}>
                    <div className={styles.trustItem}>
-                     <Check size={16} /> Uzmanlarımız tarafından değerlendirilir
+                     <Check size={16} /> Uzman tarafından değerlendirilir
                    </div>
                    <div className={styles.trustItem}>
-                     <Check size={16} /> Size özel bakım protokolü sunulur
+                     <Check size={16} /> Size özel bakım protokolü oluşturulur
                    </div>
                    <div className={styles.trustItem}>
-                     <Check size={16} /> Karar verme süreci tamamen ücretsizdir
+                     <Check size={16} /> Karar tamamen size aittir, baskı yok
                    </div>
                 </div>
               )}
 
               <div className={styles.btnActions}>
-                {step === 2 && (
+                {step > 1 && (
                   <button className={styles.btnSecondary} onClick={handleBack}>
                     Geri
                   </button>
                 )}
                 
-                {step === 1 ? (
+                {step === 1 && (
                   <button 
                       className={`${styles.btnPrimary} ${(!ciltTipi || !problem) ? '' : styles.btnActive}`} 
                       onClick={handleNext}
                       disabled={!ciltTipi || !problem}
                   >
-                    Devam Et
+                    Analizi Tamamla
                   </button>
-                ) : (
+                )}
+
+                {step === 2 && (
+                  <button 
+                      className={`${styles.btnPrimary} ${styles.btnActive}`} 
+                      onClick={handleNext}
+                  >
+                    Bana özel bakım planını oluştur
+                  </button>
+                )}
+
+                {step === 3 && (
                   <button 
                     className={`${styles.btnPrimary} ${styles.btnSubmitActive}`} 
                     onClick={handleSubmit} 
                     disabled={isSubmitting || !name || phone.replace(/\s/g, '').length < 10}
                   >
-                    {isSubmitting ? 'Gönderiliyor...' : 'Ücretsiz Analizimi Başlat'}
+                    {isSubmitting ? 'Gönderiliyor...' : 'Ücretsiz bakım planımı oluştur'}
                   </button>
                 )}
               </div>

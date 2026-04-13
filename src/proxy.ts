@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// DİKKAT: Vercel üzerinde hemen etki etmesi için burayı 'true' yapıyoruz.
-// Siteyi canlıya tam olarak açacağın zaman bunu 'false' yapıp Github'a pushlaman yeterli olacak.
-const IS_MAINTENANCE_MODE = true; 
-
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
@@ -19,9 +15,12 @@ export function proxy(request: NextRequest) {
     }
   }
   
+  // Sadece localhost'ta (geliştirme ortamında) FALSE, diğer ortamlarda (vercel, vs) TRUE.
+  const isMaintenanceMode = process.env.NODE_ENV !== 'development';
+
   // 2. Bakım Modu Koruması
   if (
-    (IS_MAINTENANCE_MODE || process.env.MAINTENANCE_MODE === 'true') && 
+    isMaintenanceMode && 
     !pathname.startsWith('/yonetim') && 
     !pathname.startsWith('/yonetim-giris') &&
     pathname !== '/bakim'
@@ -31,8 +30,8 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(url); 
   }
 
-  // Eğer bakım kapalıyken /bakim'a direkt erişilmek istenirse ana sayfaya gönder
-  if (pathname === '/bakim' && !IS_MAINTENANCE_MODE && process.env.MAINTENANCE_MODE !== 'true') {
+  // Eğer bakım kapalıyken (localhostta) /bakim'a direkt erişilmek istenirse ana sayfaya gönder
+  if (pathname === '/bakim' && !isMaintenanceMode) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
