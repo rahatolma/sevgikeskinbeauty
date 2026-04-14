@@ -139,23 +139,24 @@
   .footerLogoImgWrapper {
     width: 160px;
     height: 48px;
-    margin: 0 auto 2rem auto;
+    margin: 0 0 2rem 0;
   }
   .footerGrid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
-    text-align: center;
+    text-align: left;
   }
   .footerCol h4 {
     margin-bottom: 1.5rem;
     font-size: 1.1rem;
   }
   .newsletterForm {
-    align-items: center;
+    align-items: flex-start;
   }
   .bottomFlex {
     flex-direction: column;
     gap: 1rem;
-    text-align: center;
+    text-align: left;
+    align-items: flex-start;
   }
 }

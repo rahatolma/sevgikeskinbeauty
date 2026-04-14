@@ -285,11 +285,12 @@ export default function RezervasyonPage() {
   };
 
   const sendToWhatsapp = () => {
-      const message = `Merhaba, web sitenizden randevu talebi oluşturdum.
-Hizmet: ${selectedService?.name}
-Uzman: ${selectedAdvisor?.name}
-Tarih: ${selectedDate} / ${selectedTime}
-İsmim: ${customerInfo.name}`;
+      const timeStr = selectedTime ? selectedTime : 'Saat seçilmedi';
+      const message = `Merhaba, web sitenizden randevu talebi oluşturdum. Randevumu teyit edebilir misiniz?
+Hizmet: ${selectedService?.name || 'Belirtilmedi'}
+Uzman: ${selectedAdvisor?.name || 'Farketmez'}
+Tarih: ${selectedDate} / ${timeStr}
+İsmim: ${customerInfo.name || 'Belirtilmedi'}`;
       window.open(`https://wa.me/905308834774?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -344,12 +345,7 @@ Tarih: ${selectedDate} / ${selectedTime}
                 {step === 3 && "Randevu Zamanı"}
                 {step === 4 && "İletişim Bilgileri"}
                 </h1>
-                <div className={styles.stepper}>
-                  <span className={`${styles.step} ${step >= 1 ? styles.stepActive : ''} ${step === 1 ? styles.stepCurrent : ''}`} onClick={() => { if (step > 1) setStep(1); }}>Hizmet</span>
-                  <span className={`${styles.step} ${step >= 2 ? styles.stepActive : ''} ${step === 2 ? styles.stepCurrent : ''}`} onClick={() => { if (step > 2) setStep(2); }}>Uzman</span>
-                  <span className={`${styles.step} ${step >= 3 ? styles.stepActive : ''} ${step === 3 ? styles.stepCurrent : ''}`} onClick={() => { if (step > 3) setStep(3); }}>Tarih / Saat</span>
-                  <span className={`${styles.step} ${step >= 4 ? styles.stepActive : ''} ${step === 4 ? styles.stepCurrent : ''}`} onClick={() => { if (step > 4) setStep(4); }}>İletişim & Onay</span>
-                </div>
+
             </>
           )}
 

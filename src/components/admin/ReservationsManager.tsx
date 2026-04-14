@@ -59,7 +59,16 @@ export default function ReservationsManager() {
   const [dateFilter, setDateFilter] = useState("Tarih: Tümü");
   const [specialistFilter, setSpecialistFilter] = useState("Tümü");
   const [specialists, setSpecialists] = useState<{id:string, full_name:string}[]>([]);
+  const [categories, setCategories] = useState<{id:string, name:string}[]>([]);
+  const [services, setServices] = useState<{id:string, category_id:string, name:string}[]>([]);
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+
+  // New Booking State
+  const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newBooking, setNewBooking] = useState({
+    customer_name: '', customer_phone: '', category_id: '', service_id: '', specialist_id: '', requested_date: '', requested_time: '', note: ''
+  });
 
   useEffect(() => {
     // Determine filter from URL if linked from Dashboard
@@ -87,8 +96,14 @@ export default function ReservationsManager() {
       if (error) throw error;
 
       // Ayrıyeten uzman listesini filtre için çekiyoruz
-      const { data: specData } = await supabase.from('specialists').select('id, full_name');
+      const { data: specData } = await supabase.from('specialists').select('id, full_name').eq('is_active', true);
       if (specData) setSpecialists(specData);
+
+      const { data: catData } = await supabase.from('service_categories').select('id, name').eq('is_active', true);
+      if (catData) setCategories(catData);
+
+      const { data: srvData } = await supabase.from('services').select('id, category_id, name').eq('is_active', true);
+      if (srvData) setServices(srvData);
 
       const formattedData = (data || []).map((b: any) => {
         const isAnalysis = b.note && b.note.includes("CİLT ANALİZİ TALEBİ");
@@ -135,6 +150,50 @@ export default function ReservationsManager() {
   const closeDrawer = () => {
     setSelectedBooking(null);
     setLogs([]);
+  };
+
+  const submitNewBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBooking.customer_name || !newBooking.customer_phone || !newBooking.service_id || !newBooking.requested_date || !newBooking.requested_time) {
+       alert("Lütfen zorunlu alanları doldurun.");
+       return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+       const { data, error } = await supabase.from('booking_requests').insert([{
+           customer_name: newBooking.customer_name,
+           customer_phone: newBooking.customer_phone,
+           category_id: newBooking.category_id || null,
+           service_id: newBooking.service_id,
+           specialist_id: newBooking.specialist_id || null,
+           requested_date: newBooking.requested_date,
+           requested_time: newBooking.requested_time,
+           note: newBooking.note,
+           status: 'confirmed'
+       }]).select();
+       
+       if (error) throw error;
+       
+       if (data && data.length > 0) {
+           await supabase.from('booking_timeline_logs').insert([{
+               booking_id: data[0].id,
+               action: 'Manuel Eklendi',
+               note: 'Randevu admin panele manuel olarak eklendi ve Onaylandı.'
+           }]);
+       }
+       
+       setIsNewModalOpen(false);
+       setNewBooking({
+          customer_name: '', customer_phone: '', category_id: '', service_id: '', specialist_id: '', requested_date: '', requested_time: '', note: ''
+       });
+       fetchBookings();
+    } catch(err) {
+       console.error("Error inserting booking:", err);
+       alert("Bir hata oluştu.");
+    } finally {
+       setIsSubmitting(false);
+    }
   };
 
   const updateStatus = async (bookingId: string, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled', logMessage: string) => {
@@ -314,7 +373,7 @@ export default function ReservationsManager() {
       
       <div className={styles.header}>
         <h1 className={styles.title}>Randevular</h1>
-        <button className={styles.btnNew} onClick={() => alert("Manuel randevu ekleme formu henüz aktif değil. Supabase üzerinden bağlanacak.")}>
+        <button className={styles.btnNew} onClick={() => setIsNewModalOpen(true)}>
           <PlusCircle size={18} />
           Yeni Randevu Ekle
         </button>
@@ -667,6 +726,85 @@ export default function ReservationsManager() {
                     </>
                 )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* NEW BOOKING MODAL */}
+      {isNewModalOpen && (
+        <div className={styles.drawerOverlay} onClick={(e) => {
+            if(e.target === e.currentTarget) setIsNewModalOpen(false);
+        }}>
+          <div className={styles.drawer} style={{width: '500px'}}>
+             <div className={styles.drawerHeader}>
+               <h2 className={styles.drawerTitle} style={{fontSize: '1.2rem'}}>Yeni Manuel Randevu</h2>
+               <button className={styles.closeBtn} onClick={() => setIsNewModalOpen(false)}><X size={24} /></button>
+             </div>
+             
+             <div className={styles.drawerContent} style={{padding: '1.5rem'}}>
+                <form onSubmit={submitNewBooking} style={{display: 'flex', flexDirection: 'column', gap: '1.2rem'}}>
+                   <div>
+                      <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Müşteri Ad Soyad *</label>
+                      <input type="text" required value={newBooking.customer_name} onChange={e => setNewBooking({...newBooking, customer_name: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem'}} />
+                   </div>
+                   <div>
+                      <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Telefon Numarası *</label>
+                      <input type="text" required value={newBooking.customer_phone} onChange={e => setNewBooking({...newBooking, customer_phone: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem'}} />
+                   </div>
+                   
+                   <div style={{display:'flex', gap:'1rem'}}>
+                      <div style={{flex:1}}>
+                         <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Kategori</label>
+                         <select value={newBooking.category_id} onChange={e => setNewBooking({...newBooking, category_id: e.target.value, service_id: ''})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem', backgroundColor:'white'}}>
+                            <option value="">Seçiniz</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                         </select>
+                      </div>
+                      <div style={{flex:1}}>
+                         <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Hizmet *</label>
+                         <select required value={newBooking.service_id} onChange={e => setNewBooking({...newBooking, service_id: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem', backgroundColor:'white'}}>
+                            <option value="">Seçiniz</option>
+                            {services.filter(s => !newBooking.category_id || s.category_id === newBooking.category_id).map(s => (
+                               <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                         </select>
+                      </div>
+                   </div>
+
+                   <div style={{display:'flex', gap:'1rem'}}>
+                      <div style={{flex:1}}>
+                         <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Tarih *</label>
+                         <input type="date" required value={newBooking.requested_date} onChange={e => setNewBooking({...newBooking, requested_date: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem'}} />
+                      </div>
+                      <div style={{flex:1}}>
+                         <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Saat *</label>
+                         <select required value={newBooking.requested_time} onChange={e => setNewBooking({...newBooking, requested_time: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem', backgroundColor:'white'}}>
+                            <option value="">Seçiniz</option>
+                            {["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"].map(t => (
+                                <option key={t} value={t}>{t}</option>
+                            ))}
+                         </select>
+                      </div>
+                   </div>
+
+                   <div>
+                      <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Uzman</label>
+                      <select value={newBooking.specialist_id} onChange={e => setNewBooking({...newBooking, specialist_id: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem', backgroundColor:'white'}}>
+                         <option value="">Sistem / Atanmadı</option>
+                         {specialists.map(sp => <option key={sp.id} value={sp.id}>{sp.full_name}</option>)}
+                      </select>
+                   </div>
+                   
+                   <div>
+                      <label style={{display:'block', marginBottom:'0.3rem', fontWeight:600, fontSize:'0.9rem'}}>Müşteri / Randevu Notu</label>
+                      <textarea value={newBooking.note} onChange={e => setNewBooking({...newBooking, note: e.target.value})} style={{width:'100%', padding:'0.75rem', borderRadius:'6px', border:'1px solid #d1d5db', fontSize:'0.95rem', minHeight:'80px'}}></textarea>
+                   </div>
+                   
+                   <button type="submit" disabled={isSubmitting} style={{background: 'var(--color-dark)', color: 'var(--color-gold)', width: '100%', padding: '1rem', border: 'none', borderRadius: '6px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '1rem', transition: 'all 0.2s ease'}}>
+                      {isSubmitting ? 'Kaydediliyor...' : 'Randevuyu Kaydet (Onaylı)'}
+                   </button>
+                </form>
+             </div>
           </div>
         </div>
       )}

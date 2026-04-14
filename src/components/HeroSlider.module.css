@@ -350,18 +350,22 @@
   }
   .textWrapper {
     padding-left: 0;
-    text-align: center;
+    text-align: left;
+    align-items: flex-start;
   }
   .ctaGroup {
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
   }
   .title {
     font-size: 2.2rem;
+    text-align: left;
   }
   .subtitle {
     font-size: 0.95rem;
     max-width: 100%;
+    margin-left: 0;
+    text-align: left;
   }
   .heroContent {
     padding: 0 1.5rem;

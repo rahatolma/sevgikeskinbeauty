@@ -506,6 +506,9 @@
     flex-direction: column;
     gap: 3rem;
   }
+  .storySection, .founderSection, .statsSection, .teamSection, .ctaSection {
+    padding: 4rem 0 !important; /* Reduce the huge 8rem/6rem padding */
+  }
   .storyImageWrapper {
     height: 400px;
     width: 100%;
