@@ -339,7 +339,7 @@ Tarih: ${selectedDate} / ${timeStr}
           
           {step < 5 && (
             <>
-                <h1 style={{fontFamily: 'var(--font-serif)', fontSize: '3rem', color: 'var(--color-dark)', marginBottom: '1.5rem', fontWeight: 400}}>
+                <h1 className={styles.stepMainTitle}>
                 {step === 1 && "Size en uygun hizmeti seçin"}
                 {step === 2 && "Uzman Seçimi"}
                 {step === 3 && "Randevu Zamanı"}
@@ -541,7 +541,7 @@ Tarih: ${selectedDate} / ${timeStr}
                   </div>
 
                   {/* DATE & TIME SELECTION BOX */}
-                  <div className={styles.adminServiceCard} style={{cursor: 'default', flexDirection: 'column', alignItems: 'stretch', padding: '2rem'}}>
+                  <div className={styles.adminServiceCard} style={{cursor: 'default', flexDirection: 'column', alignItems: 'stretch'}}>
                       <h3 className={styles.stepBlockTitle} style={{marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: '1.3rem'}}>Hangi zaman sizin için uygun?</h3>
                       
                       {/* Dynamic Days selection */}

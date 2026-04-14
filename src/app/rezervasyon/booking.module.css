@@ -81,6 +81,14 @@
   color: var(--color-gray);
 }
 
+.stepMainTitle {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  color: var(--color-dark);
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
 /* Stepper (İlerleme Çubuğu) YENİ SEKME TASARIMI */
 .stepper {
   display: inline-flex;
@@ -631,8 +639,16 @@
 }
 
 @media (max-width: 576px) {
+  .stepMainTitle {
+    font-size: 2rem;
+  }
   .timeGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  .timeSlot {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
   }
   .stepper {
     display: none !important;
