@@ -1,7 +1,6 @@
 .pageContainer {
   min-height: 100vh;
   background-color: #fcfcfc;
-  padding-top: 7rem; /* Sabit header boşluğu eklendi */
 }
 
 /* HEADER AREA */
