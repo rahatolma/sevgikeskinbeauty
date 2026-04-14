@@ -15,8 +15,8 @@ export function proxy(request: NextRequest) {
     }
   }
   
-  // Sadece localhost'ta (geliştirme ortamında) FALSE, diğer ortamlarda (vercel, vs) TRUE.
-  const isMaintenanceMode = process.env.NODE_ENV !== 'development';
+  // process.env.MAINTENANCE_MODE değişkenine göre bakım modunu yönet
+  const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
 
   // 2. Bakım Modu Koruması
   if (
