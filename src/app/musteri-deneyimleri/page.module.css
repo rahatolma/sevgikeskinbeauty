@@ -8,7 +8,7 @@
 .headerArea {
   margin-bottom: 3rem;
   text-align: left;
-  padding-top: 5rem; /* Sabit headerı kesin atlatır */
+  /* padding-top: 5rem; Sabit headerı atlamak için pageContainer da kullanıldı */
 }
 
 .pageTitle {
@@ -26,7 +26,7 @@
 
 /* CONTENT & FILTERS */
 .contentSection {
-  padding: 5rem 0 8rem;
+  padding: 2rem 0 8rem;
 }
 
 .filterWrapper {
